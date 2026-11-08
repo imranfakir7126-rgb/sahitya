@@ -1348,6 +1348,13 @@ img{image-rendering:auto;-webkit-backface-visibility:hidden;backface-visibility:
 .npb{display:flex;flex-direction:column;gap:10px;width:100%;margin-top:18px}.npb button{padding:14px;border-radius:12px;font-weight:700;font-size:16px}.npok{background:var(--red);color:#fff}.npgo{background:var(--card2);border:1px solid var(--line)}
 </style>
 <style id="jp-flags">
+.cxopts{display:flex!important;flex-direction:column;gap:12px!important;margin-bottom:14px}
+.cxopts button{flex-direction:row!important;justify-content:center;width:100%;padding:16px 18px!important;border-radius:16px!important;font-size:17px!important;background:var(--card)!important;border:1.5px solid var(--line)!important;gap:10px!important}
+.cxopts button.on{background:var(--pur)!important;border-color:var(--pur)!important;color:#fff!important}
+.cxopts button svg{width:24px!important;height:24px!important;color:currentColor!important}
+.cxw.cxwr #cxExp,.cxw.cxwr #cxFlt,.cxw.cxwr #cxFeed,.cxw.cxwl #cxExp,.cxw.cxwl #cxFlt,.cxw.cxwl #cxFeed,.cxw.cxwe [data-cx=write]{display:none}
+.cxcomp .cxsend{width:100%!important;height:auto!important;min-height:54px;border-radius:16px!important;padding:15px 18px!important;font-size:18px!important;display:flex!important;gap:10px;background:var(--pur);color:#fff}
+.cxcomp .cxsend svg{width:24px!important;height:24px!important}
 #maintOv{position:fixed;inset:0;z-index:99999;background:var(--bg);color:var(--text);display:grid;place-items:center;text-align:center;padding:30px}
 #maintOv .mi{font-size:54px}#maintOv h2{margin:10px 0 6px}#maintOv p{color:var(--muted);margin:0}
 .f-nochat #nav [data-nav=msg],.f-noquiz .quizpill,.f-noquiz [data-href="/quiz"],.f-nowr [data-href="/w"],.f-nocm .cmrow{display:none!important}
@@ -4210,8 +4217,8 @@ async function cxMyLoad() {
 }
 function viewCommunity() {
   cxMode = 'feed';
-  return headerTab() + '<main class="page cxw"><h2 class="cxttl">কমিউনিটি ডিসকাশন</h2>' +
-    '<div class="cxopts"><button data-cx="write">' + IC.pen + '<span>পোস্ট লিখুন</span></button><button data-cx="view">' + IC.chat + '<span>পাঠকদের মন্তব্য দেখুন</span></button></div>' +
+  return headerTab() + '<main class="page cxw cxwl"><h2 class="cxttl">কমিউনিটি ডিসকাশন</h2>' +
+    '<div class="cxopts"><button data-cx="write">' + IC.pen + '<span>পোস্ট লিখুন</span></button><button data-cx="view">' + IC.chat + '<span>এক্সপ্লোর করুন</span></button></div>' +
     '<div id="cxCompose"></div><h3 class="cxx" id="cxExp">এক্সপ্লোর</h3><div class="cxflt" id="cxFlt">' + cxFltHtml() + '</div><div id="cxFeed"><div class="empty">লোড হচ্ছে…</div></div></main>';
 }
 function viewMyPosts() { cxMode = 'mine'; return headerPage('আমার পোস্টসমূহ', true) + '<main class="page cxw"><div id="cxFeed"><div class="empty">লোড হচ্ছে…</div></div></main>'; }
@@ -4221,9 +4228,9 @@ function cxComposeHtml() {
   return '<section class="cxcomp"><div class="cxch"><b>' + (p ? 'পোস্ট এডিট করুন' : 'নতুন পোস্ট লিখুন') + '</b><button data-cx="cancel">বাতিল</button></div>' +
     '<textarea id="cxTxt" maxlength="500" rows="4" placeholder="আপনার উপন্যাস সম্পর্কে কিছু লিখুন..." aria-label="পোস্ট লিখুন">' + (p ? esc(p.text) : '') + '</textarea><div class="cxcnt"><span id="cxN">' + bn(p ? p.text.length : 0) + '/৫০০</span></div>' +
     '<h4>কালার ব্যাকগ্রাউন্ড নির্বাচন করুন</h4><div class="cxcols">' + Object.keys(CX_BG).map((k) => '<button type="button" data-cx="color" data-v="' + k + '" class="' + (k === cxSel ? 'on' : '') + '" style="' + cxBgCss(k) + '" aria-label="' + CX_BG[k][0] + '">' + CX_BG[k][0] + '</button>').join('') + '</div>' +
-    '<p class="acerr" id="cxErr" role="alert"></p><button class="cxsend" data-cx="send">' + IC.share + (p ? 'আপডেট করুন' : 'শেয়ার পোস্ট') + '</button><small class="cxnote">(অ্যাডমিনের অনুমোদনের জন্য যাবে)</small></section>';
+    '<p class="acerr" id="cxErr" role="alert"></p><button class="cxsend" data-cx="send">' + IC.share + (p ? 'আপডেট করুন' : 'পোস্ট করুন') + '</button><small class="cxnote">(অ্যাডমিনের অনুমোদনের জন্য যাবে)</small></section>';
 }
-function cxOpenCompose() { const c = $('#cxCompose'); if (!c) return; c.innerHTML = cxComposeHtml(); $$('.cxopts button').forEach((b, i) => b.classList.toggle('on', i === 0)); const t = $('#cxTxt'); if (t) t.focus(); c.scrollIntoView({ behavior: (store.get('jp_noanim', false) === true ? 'auto' : 'smooth'), block: 'start' }); }
+function cxOpenCompose() { const c = $('#cxCompose'); if (!c) return; c.innerHTML = cxComposeHtml(); const _w = $('.cxw'); if (_w) { _w.classList.add('cxwr'); _w.classList.remove('cxwl', 'cxwe'); } $$('.cxopts button').forEach((b, i) => b.classList.toggle('on', i === 0)); const t = $('#cxTxt'); if (t) t.focus(); c.scrollIntoView({ behavior: (store.get('jp_noanim', false) === true ? 'auto' : 'smooth'), block: 'start' }); }
 async function cxSend() {
   const err = (m) => { const e = $('#cxErr'); if (e) e.textContent = m; };
   const t = (($('#cxTxt') || {}).value || '').trim(); if (t.length < 5) return err('কিছু লিখুন (কমপক্ষে ৫ অক্ষর)');
@@ -4237,7 +4244,7 @@ async function cxSend() {
       await f.collection('posts').add({ name: (a && a.name) || 'অতিথি পাঠক', uid: cxMe, text: t.slice(0, 500), bg: cxSel, st: 'review', pub: false, at: Date.now(), likes: 0, dislikes: 0, cmts: 0 });
       toast('পোস্ট অ্যাডমিনের অনুমোদনের জন্য পাঠানো হয়েছে');
     }
-    const c = $('#cxCompose'); if (c) c.innerHTML = ''; $$('.cxopts button').forEach((b) => b.classList.remove('on')); cxLoad();
+    const _w = $('.cxw'); if (_w) { _w.classList.remove('cxwr', 'cxwe'); _w.classList.add('cxwl'); } const c = $('#cxCompose'); if (c) c.innerHTML = ''; $$('.cxopts button').forEach((b) => b.classList.remove('on')); cxLoad();
   } catch (e) { err('পোস্ট পাঠানো যায়নি' + (cxWhy(e) || '। ইন্টারনেট দেখুন, তারপর আবার চেষ্টা করুন')); if (btn) btn.disabled = false; }
   cxBusy = false;
 }
@@ -4325,8 +4332,8 @@ document.addEventListener('input', (e) => { if (e.target && e.target.id === 'cxT
 document.addEventListener('click', (ev) => {
   const el = ev.target.closest('[data-cx]'); if (!el) return; const a = el.dataset.cx;
   if (a === 'write') { cxEdit = null; cxEditP = null; cxOpenCompose(); }
-  else if (a === 'view') { const c = $('#cxCompose'); if (c) c.innerHTML = ''; $$('.cxopts button').forEach((b, i) => b.classList.toggle('on', i === 1)); const x = $('#cxExp'); if (x) x.scrollIntoView({ behavior: (store.get('jp_noanim', false) === true ? 'auto' : 'smooth'), block: 'start' }); }
-  else if (a === 'cancel') { cxEdit = null; cxEditP = null; const c = $('#cxCompose'); if (c) c.innerHTML = ''; $$('.cxopts button').forEach((b) => b.classList.remove('on')); }
+  else if (a === 'view') { const _w = $('.cxw'); const back = _w && _w.classList.contains('cxwe'); if (_w) { _w.classList.remove('cxwr'); if (back) { _w.classList.remove('cxwe'); _w.classList.add('cxwl'); } else { _w.classList.remove('cxwl'); _w.classList.add('cxwe'); } } const c = $('#cxCompose'); if (c) c.innerHTML = ''; $$('.cxopts button').forEach((b, i) => b.classList.toggle('on', i === 1 && !back)); if (back) return; const x = $('#cxExp'); if (x) x.scrollIntoView({ behavior: (store.get('jp_noanim', false) === true ? 'auto' : 'smooth'), block: 'start' }); }
+  else if (a === 'cancel') { cxEdit = null; cxEditP = null; const _w = $('.cxw'); if (_w) { _w.classList.remove('cxwr', 'cxwe'); _w.classList.add('cxwl'); } const c = $('#cxCompose'); if (c) c.innerHTML = ''; $$('.cxopts button').forEach((b) => b.classList.remove('on')); }
   else if (a === 'color') { cxSel = el.dataset.v; $$('.cxcols button').forEach((b) => b.classList.toggle('on', b === el)); }
   else if (a === 'flt') { cxFlt = el.dataset.v; cxDraw(); }
   else if (a === 'send') cxSend();
