@@ -1783,7 +1783,8 @@ function handleSync(method, full, body, user) {
   throw new Error('অজানা অনুরোধ');
 }
 const FBCFG={apiKey:"AIzaSyChJazuEIsUbRjfULzalX9-DK5nL58afYA",authDomain:"novelread-4ab43.firebaseapp.com",projectId:"novelread-4ab43",storageBucket:"novelread-4ab43.firebasestorage.app",messagingSenderId:"373192250091",appId:"1:373192250091:web:2aa4faecbeaed491f3e4ae"};
-function loadFB(l){if(window.firebase&&firebase.firestore)return Promise.resolve();const one=n=>new Promise((ok,no)=>{const t=['https://www.gstatic.com/firebasejs/10.12.2/firebase-'+n+'-compat.js','https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-'+n+'-compat.js'];let i=0;(function go(){const s=document.createElement('script');s.src=t[i];s.onload=ok;s.onerror=()=>{s.remove();++i<t.length?go():no(new Error('firebase-'+n))};document.head.append(s)})()});return one('app').then(()=>Promise.all(l.map(one)))}
+const FBM={};function fbMod(n){return FBM[n]||(FBM[n]=new Promise((ok,no)=>{const t=['https://www.gstatic.com/firebasejs/10.12.2/firebase-'+n+'-compat.js','https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-'+n+'-compat.js'];let i=0;(function go(){const s=document.createElement('script');s.src=t[i];s.onload=ok;s.onerror=()=>{s.remove();++i<t.length?go():(delete FBM[n],no(new Error('firebase-'+n)))};document.head.append(s)})()}))}
+function loadFB(l){if(window.firebase&&firebase.firestore)return Promise.resolve();return fbMod('app').then(()=>Promise.all(l.map(fbMod)))}
 let fs, INC, uid0 = '';
 const INCL = {};
 const LS = { get(k) { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { return {}; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } } };
@@ -2213,8 +2214,8 @@ setTimeout(wWarm, 700);
 async function wInit() {
   if (WR.ready) return WR.ready;
   WR.ready = (async () => {
-    if (!(window.firebase && firebase.initializeApp)) await wLoadScript(wCdn('app'));
-    await Promise.all([firebase.firestore ? 0 : wLoadScript(wCdn('firestore')), firebase.auth ? 0 : (wAuthP || (wAuthP = wLoadScript(wCdn('auth'))))]);
+    await fbMod('app');
+    await Promise.all([fbMod('firestore'), fbMod('auth')]);
     WR.app = (firebase.apps || []).find((a) => a.name === 'writer') || firebase.initializeApp(WCFG, 'writer');
     WR.auth = WR.app.auth();
     try { await WR.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); } catch (e) { try { await WR.auth.setPersistence(firebase.auth.Auth.Persistence.SESSION); } catch (x) { /* ignore */ } }
@@ -2340,7 +2341,7 @@ async function wGoProfile(uid, name, key) {
   if (k) nav('/author/' + enc(k)); else toast('প্রোফাইল পাওয়া যায়নি');
 }
 async function wMsgOpen(uid, name, key) {
-  try { await withWTimeout(wInit(), 12000); } catch (e) { toast(wErr(e)); return; }
+  try { await withWTimeout(wInit(), 25000); } catch (e) { toast(wErr(e)); return; }
   if (!WR.user) { toast('মেসেজ পাঠাতে আগে লেখক প্যানেলে লগইন করুন'); nav('/w'); return; }
   if (!WR.prof || WR.prof.status !== 'approved' || WR.prof.blocked) { toast('শুধু অনুমোদিত লেখক মেসেজ পাঠাতে পারবেন'); return; }
   if (uid === wMe()) { toast('এটি আপনার নিজের প্রোফাইল'); return; }
@@ -2391,7 +2392,7 @@ async function viewMsgTab() {
   const gate = (t, btn) => hd() + '<main class="page"><div class="wgate" style="padding:40px 10px;text-align:center"><div class="big" style="font-size:46px">💬</div><p style="line-height:1.8">' + t + '</p>' + btn + '</div></main>';
   const go = (h, l) => '<button class="btn pur" data-act="go" data-href="' + h + '">' + l + '</button>';
   const T1 = 'মেসেজ করতে আগে একটি <b>লেখক অ্যাকাউন্ট</b> খুলুন। তারপর যে লেখককে মেসেজ করতে চান তাঁকে ফলো দিন — তিনিও ফলো ব্যাক করলে মেসেজ করা যাবে।';
-  try { await withWTimeout(wInit(), 12000); } catch (e) { return gate(esc(wErr(e)), '<button class="btn pur" data-act="go" data-href="/msg">আবার চেষ্টা করুন</button>'); }
+  try { await withWTimeout(wInit(), 25000); } catch (e) { return gate(esc(wErr(e)), '<button class="btn pur" data-act="go" data-href="/msg">আবার চেষ্টা করুন</button>'); }
   if (!WR.user) return gate(T1, go('/w/signup', 'লেখক অ্যাকাউন্ট খুলুন') + '<div style="margin-top:12px"><button class="wlink" data-act="go" data-href="/w">আগে থেকেই অ্যাকাউন্ট আছে? লগইন করুন</button></div>');
   if (WR.prof && WR.prof.status !== 'approved') return gate('আপনার লেখক অ্যাকাউন্ট অ্যাডমিনের রিভিউয়ে আছে। অনুমোদন পেলে মেসেজ করতে পারবেন।', go('/w', 'অবস্থা দেখুন'));
   setTimeout(wRefreshBadges, 300);
@@ -2451,7 +2452,7 @@ const wLpStart = (e) => { const b = e.target.closest && e.target.closest('.wb[da
 ['touchend', 'touchmove', 'touchcancel', 'mouseup', 'scroll'].forEach((t) => document.addEventListener(t, () => clearTimeout(wLP), { passive: true }));
 async function viewBlocked() {
   const hp = headerPage('ব্লক করা লেখক', true);
-  try { await withWTimeout(wInit(), 12000); } catch (e) { return hp + '<main class="page"><div class="empty">' + esc(wErr(e)) + '</div></main>'; }
+  try { await withWTimeout(wInit(), 25000); } catch (e) { return hp + '<main class="page"><div class="empty">' + esc(wErr(e)) + '</div></main>'; }
   if (!WR.user) return hp + '<main class="page"><div class="empty">ব্লক তালিকা দেখতে লেখক প্যানেলে লগইন করুন।<br><br><button class="btn pur" data-act="go" data-href="/w">লগইন করুন</button></div></main>';
   const q = await WR.fs.collection('blocks').where('by', '==', wMe()).get(); let h = '';
   await Promise.all(q.docs.map((d) => wProf(d.data().target))); for (const d of q.docs.sort((a, b) => (b.data().at || 0) - (a.data().at || 0))) { const u = d.data().target, p = await wProf(u); h += '<div class="wrow" style="cursor:default">' + wAv(p) + '<div class="in"><b>' + esc(p.name || 'লেখক') + '</b><small>ব্লক করা আছে</small></div><div class="wrb" style="margin:0"><button class="pr" data-wm="unblock" data-u="' + esc(u) + '">আনব্লক</button></div></div>'; }
@@ -4180,10 +4181,7 @@ const cxBgCss = (k) => { const c = CX_BG[k] || CX_BG.purple; return 'background:
 const CX_FLT = [['all', 'সব পোস্ট'], ['today', 'আজকের পোস্ট'], ['yday', 'কালকের পোস্ট'], ['week', 'সাপ্তাহিক পোস্ট'], ['month', 'মাসিক পোস্ট'], ['latest', 'আজকের লেটেস্ট পোস্ট']];
 let cxEditP = null, cxPosts = [], cxSel = 'purple', cxFlt = 'all', cxEdit = null, cxBusy = false, cxCur = null, cxCms = [], cxReply = null, cxMode = 'feed';
 let cxMe = myUid();
-function cxLoadAuth() {
-  return new Promise((ok, no) => { if (firebase.auth) return ok(); const t = ['https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js', 'https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-auth-compat.js']; let i = 0;
-    (function go() { const el = document.createElement('script'); el.src = t[i]; el.onload = () => ok(); el.onerror = () => { el.remove(); if (++i < t.length) go(); else no(new Error('auth')); }; document.head.append(el); })(); });
-}
+function cxLoadAuth() { return fbMod('app').then(() => fbMod('auth')); }
 let cxAuthErr = '', cxErr = null;
 async function cxAuth() {
   try { if (!window.firebase) return false; await cxLoadAuth(); const a = firebase.auth(); if (a.currentUser) cxMe = a.currentUser.uid; else { const r = await a.signInAnonymously(); cxMe = r.user.uid; } cxAuthErr = ''; return true; } catch (e) { cxAuthErr = (e && e.code) || 'auth'; return false; }
