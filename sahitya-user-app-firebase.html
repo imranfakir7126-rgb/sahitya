@@ -4234,28 +4234,33 @@ async function pushSave(tok, plat) {
 function pushSheet(tok) {
   openSheet('<div style="padding:18px"><h3 style="margin:0 0 6px">পুশ নোটিফিকেশন চালু হয়েছে ✅</h3><p style="margin:0 0 10px;opacity:.8;font-size:14px">Firebase Console → Messaging → "Test on device"-এ এই টোকেনটি বসিয়ে টেস্ট করতে পারেন।</p><textarea id="pushTok" readonly rows="5" style="width:100%;font-size:12px;word-break:break-all">' + esc(tok) + '</textarea><button class="cxsend" style="margin-top:10px" data-act="push-copy">টোকেন কপি করুন</button></div>');
 }
+function pushErr(msg) {
+  const blocked = (typeof Notification !== 'undefined' && Notification.permission === 'denied');
+  openSheet('<div style="padding:18px"><h3 style="margin:0 0 8px">পুশ নোটিফিকেশন চালু হয়নি</h3><p style="margin:0 0 10px;font-size:15px">' + esc(msg) + '</p>' + (blocked ? '<p style="font-size:14px;opacity:.85">ব্রাউজারে এই সাইটের নোটিফিকেশন বন্ধ করা আছে। ঠিকানার পাশের 🔒 বা ⓘ চাপুন → <b>Permissions / অনুমতি</b> → <b>Notifications</b> → <b>Allow</b> করুন, তারপর পেজ রিফ্রেশ করে আবার চেষ্টা করুন।</p>' : '') + '</div>');
+}
 async function pushEnable(silent) {
+  if (!silent) toast('চালু হচ্ছে… একটু অপেক্ষা করুন');
   try {
     if (isNative()) {
       const PN = window.Capacitor.Plugins && window.Capacitor.Plugins.PushNotifications;
-      if (!PN) { if (!silent) toast('এই APK-তে Push প্লাগিন যোগ করা নেই (README দেখুন)'); return; }
-      const p = await PN.requestPermissions(); if (p.receive !== 'granted') { if (!silent) toast('নোটিফিকেশনের অনুমতি দেওয়া হয়নি'); return; }
+      if (!PN) { if (!silent) pushErr('এই APK-তে Push প্লাগিন যোগ করা নেই (README দেখুন)'); return; }
+      const p = await PN.requestPermissions(); if (p.receive !== 'granted') { if (!silent) pushErr('নোটিফিকেশনের অনুমতি দেওয়া হয়নি'); return; }
       PN.addListener('registration', async (t) => { await pushSave(t.value, 'android'); if (!silent) pushSheet(t.value); });
-      PN.addListener('registrationError', (e) => { if (!silent) toast('নিবন্ধন হয়নি: ' + ((e && e.error) || '')); });
+      PN.addListener('registrationError', (e) => { if (!silent) pushErr('নিবন্ধন হয়নি: ' + ((e && e.error) || '')); });
       PN.addListener('pushNotificationReceived', (n) => { toast((n && n.title) || 'নতুন নোটিফিকেশন'); });
       await PN.register(); return;
     }
-    if (!('Notification' in window) || !('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) { if (!silent) toast('এই ব্রাউজারে পুশ নোটিফিকেশন চলে না'); return; }
-    if (!FCM_VAPID) { if (!silent) toast('VAPID কী বসানো হয়নি — কোডে FCM_VAPID-এ কী দিন'); return; }
+    if (!('Notification' in window) || !('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) { if (!silent) pushErr('এই ব্রাউজারে পুশ নোটিফিকেশন চলে না'); return; }
+    if (!FCM_VAPID) { if (!silent) pushErr('VAPID কী বসানো হয়নি — কোডে FCM_VAPID-এ কী দিন'); return; }
     if (silent && Notification.permission !== 'granted') return;
-    const perm = await Notification.requestPermission(); if (perm !== 'granted') { if (!silent) toast('নোটিফিকেশনের অনুমতি দেওয়া হয়নি'); return; }
+    const perm = await Notification.requestPermission(); if (perm !== 'granted') { if (!silent) pushErr('নোটিফিকেশনের অনুমতি দেওয়া হয়নি'); return; }
     await api('/categories'); await loadMsgSdk();
     const reg = await navigator.serviceWorker.register('sw.js'); await navigator.serviceWorker.ready;
     const m = firebase.messaging(); const tok = await m.getToken({ vapidKey: FCM_VAPID, serviceWorkerRegistration: reg });
-    if (!tok) { if (!silent) toast('টোকেন পাওয়া যায়নি'); return; }
+    if (!tok) { if (!silent) pushErr('টোকেন পাওয়া যায়নি'); return; }
     try { m.onMessage((pl) => { const n = (pl && pl.notification) || {}; toast(n.title || 'নতুন নোটিফিকেশন'); }); } catch (e) { /* ignore */ }
     await pushSave(tok, 'web'); if (!silent) pushSheet(tok);
-  } catch (e) { if (!silent) toast('চালু করা যায়নি: ' + ((e && (e.code || e.message)) || '')); }
+  } catch (e) { if (!silent) pushErr('চালু করা যায়নি: ' + ((e && (e.code || e.message)) || '')); }
 }
 setTimeout(() => { try { if (store.get('jp_fcm', '')) pushEnable(true); } catch (e) { /* ignore */ } }, 5000);
 async function cxFs() { try { await api('/categories'); } catch (e) { /* ignore */ } await cxAuth(); return SFB(); }
