@@ -1,10 +1,4 @@
 /* যাত্রাপথ — অফলাইনে অ্যাপ খোলার জন্য সার্ভিস ওয়ার্কার (পেজ ও ছবি ফোনে জমিয়ে রাখে) */
-/* পুশ নোটিফিকেশন (FCM) — অ্যাপ বন্ধ থাকলেও নোটিফিকেশন দেখাবে */
-try {
-  importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
-  firebase.initializeApp({ apiKey: 'AIzaSyChJazuEIsUbRjfULzalX9-DK5nL58afYA', authDomain: 'novelread-4ab43.firebaseapp.com', projectId: 'novelread-4ab43', storageBucket: 'novelread-4ab43.firebasestorage.app', messagingSenderId: '373192250091', appId: '1:373192250091:web:2aa4faecbeaed491f3e4ae' });
-  firebase.messaging();
-} catch (e) { /* অফলাইনে SDK না পেলে বাদ */ }
 var CACHE = 'jp-shell-v1', SDK = 'jp-sdk-v1';
 self.addEventListener('install', function (e) { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
