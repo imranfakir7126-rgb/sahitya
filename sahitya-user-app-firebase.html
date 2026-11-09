@@ -4263,6 +4263,17 @@ async function pushEnable(silent) {
   } catch (e) { if (!silent) pushErr('চালু করা যায়নি: ' + ((e && (e.code || e.message)) || '')); }
 }
 setTimeout(() => { try { if (store.get('jp_fcm', '')) pushEnable(true); } catch (e) { /* ignore */ } }, 5000);
+/* প্রথমবার অ্যাপ খুললে (এবং "পরে" বললে ৭ দিন পর) নোটিফিকেশনের অনুমতি চাওয়া হয় */
+function pushAsk() {
+  try {
+    if (IS_ADM() || store.get('jp_fcm', '')) return;
+    if (!isNative() && (!('Notification' in window) || !('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol) || !FCM_VAPID || Notification.permission !== 'default')) return;
+    const last = store.get('jp_pushask', 0); if (last && Date.now() - last < 7 * 86400000) return;
+    if (document.getElementById('sheetWrap') && !document.getElementById('sheetWrap').hidden) return;
+    openSheet('<div style="padding:22px;text-align:center"><div style="font-size:42px">🔔</div><h3 style="margin:6px 0">নতুন খবর মিস করবেন না</h3><p style="margin:0 0 14px;opacity:.85;font-size:15px">নতুন বই, নতুন পর্ব আর গুরুত্বপূর্ণ ঘোষণা ফোনেই জানতে নোটিফিকেশন চালু করুন।</p><button class="cxsend" data-act="push-ask-yes">চালু করুন</button><button class="wlink" style="margin-top:10px;display:block;width:100%" data-act="push-ask-no">পরে</button></div>');
+  } catch (e) { /* ignore */ }
+}
+setTimeout(pushAsk, 9000);
 async function cxFs() { try { await api('/categories'); } catch (e) { /* ignore */ } await cxAuth(); return SFB(); }
 async function cxLoad() {
   const w = $('#cxFeed'); if (!w) return; const f = await cxFs();
@@ -5014,6 +5025,8 @@ async function onClick(ev) {
       case 'rem-go': { const x = $('#remB'); if (x) x.remove(); const l = store.get('jp_lastbook', null); if (l && l.id) nav('/read/' + enc(l.id) + '/' + l.n); else nav('/'); break; }
       case 'rem-x': { const x = $('#remB'); if (x) x.remove(); break; }
       case 'cont-x': { const dx = store.get('jp_contx', []); if (dx.indexOf(d.id) < 0) dx.push(d.id); store.set('jp_contx', dx); route(); break; }
+      case 'push-ask-yes': store.set('jp_pushask', Date.now()); closeSheet(); pushEnable(false); break;
+      case 'push-ask-no': store.set('jp_pushask', Date.now()); closeSheet(); break;
       case 'push-on': { const t = store.get('jp_fcm', ''); if (t) pushSheet(t); else pushEnable(false); break; }
       case 'push-copy': { const t = $('#pushTok'); const v = t ? t.value : ''; try { navigator.clipboard.writeText(v).then(() => toast('কপি হয়েছে'), () => { t.select(); document.execCommand('copy'); toast('কপি হয়েছে'); }); } catch (e) { if (t) { t.select(); document.execCommand('copy'); toast('কপি হয়েছে'); } } break; }
       case 'deco-toggle': store.set('jp_deco', !decoOn()); applyDeco(); profRerender(); break;
