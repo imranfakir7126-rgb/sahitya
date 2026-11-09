@@ -1348,6 +1348,9 @@ img{image-rendering:auto;-webkit-backface-visibility:hidden;backface-visibility:
 .npb{display:flex;flex-direction:column;gap:10px;width:100%;margin-top:18px}.npb button{padding:14px;border-radius:12px;font-weight:700;font-size:16px}.npok{background:var(--red);color:#fff}.npgo{background:var(--card2);border:1px solid var(--line)}
 </style>
 <style id="jp-flags">
+.upl{margin:2px 4px 8px;font-size:13px;color:var(--muted)}.upl b{color:var(--text)}
+.cxw .cxopts{position:sticky;top:50px;z-index:15;background:var(--bg);padding:6px 0 8px;margin-bottom:6px}
+.cxw .cxopts button{padding:12px 16px!important}
 .cxopts{display:flex!important;flex-direction:column;gap:12px!important;margin-bottom:14px}
 .cxopts button{flex-direction:row!important;justify-content:center;width:100%;padding:16px 18px!important;border-radius:16px!important;font-size:17px!important;background:var(--card)!important;border:1.5px solid var(--line)!important;gap:10px!important}
 .cxopts button.on{background:var(--pur)!important;border-color:var(--pur)!important;color:#fff!important}
@@ -1995,7 +1998,14 @@ try { if (!store.get('jp_chbar_red', false)) { const o = store.get('jp_rs', null
 function setRS(k, v) { const r = getRS(); r[k] = v; store.set('jp_rs', r); applyRS(); }
 const RBG = { white: ['#ffffff', '#1b1917'], dark: ['#121212', '#ececec'], cream: ['#f6ecd2', '#3b2a20'], blue: ['#e6eefc', '#1c2a44'], pink: ['#fbe9ef', '#4a2230'], mint: ['#e3f4ea', '#1d3a2b'], night: ['#1b1510', '#d8c5a0'], sepia: ['#f1e4c8', '#4a3a26'] };
 const FONTS = { sans: ["'Noto Sans Bengali','Hind Siliguri',sans-serif", 'সান্স'], serif: ["'Noto Serif Bengali','Kalpurush',serif", 'সেরিফ'], kal: ["'Kalpurush','SolaimanLipi','Noto Sans Bengali',sans-serif", 'কালপুরুষ'] };
-const FLG = (k) => { try { const f = (db && db.flags) || {}; return (k === 'maint' || k === 'dark') ? f[k] === true : f[k] !== false; } catch (e) { return !(k === 'maint' || k === 'dark'); } };
+let FLAGS = null, flagsAt = 0;
+async function flagsRefresh(force) {
+  if (!force && Date.now() - flagsAt < 15000) return; flagsAt = Date.now();
+  try { const f = window.__JPFS || ((typeof WR !== 'undefined' && WR && WR.fs) ? WR.fs : null); if (!f) return; const d = await f.doc('config/flags').get(); FLAGS = d.exists ? d.data() : {}; flagsApply(); } catch (e) { /* ignore */ }
+}
+async function flagOk(k, msg) { await flagsRefresh(true); if (k === 'maint' ? !FLG('maint') : FLG(k)) return true; toast(msg || 'এই ফিচারটি এখন বন্ধ আছে'); return false; }
+try { document.addEventListener('visibilitychange', () => { if (!document.hidden) flagsRefresh(true); }); setInterval(() => { if (!document.hidden) flagsRefresh(true); }, 30000); } catch (e) { /* ignore */ }
+const FLG = (k) => { try { const f = FLAGS || (db && db.flags) || {}; return (k === 'maint' || k === 'dark') ? f[k] === true : f[k] !== false; } catch (e) { return !(k === 'maint' || k === 'dark'); } };
 const IS_ADM = () => { try { return typeof admIn === 'function' && admIn(); } catch (e) { return false; } };
 function flagsApply() {
   const b = document.body; if (!b) return;
@@ -2303,6 +2313,7 @@ async function wRefreshBadges() {
 }
 /* লেখক পেজে ফলো করলে (লেখক হিসেবে লগইন থাকলে) বন্ধুত্বের অনুরোধ যায় */
 async function wFollowSync(uid, name, on) {
+  if (on && !(await flagOk('chat', 'বন্ধু ও মেসেজ সিস্টেম এখন বন্ধ আছে'))) return;
   if (!uid) return;
   try {
     await withWTimeout(wInit(), 8000); if (!WR.user || !WR.prof || WR.prof.status !== 'approved' || WR.prof.blocked || uid === wMe()) return;
@@ -2472,6 +2483,7 @@ function wChatBind(cid) {
   })();
 }
 async function wSend(img) {
+  if (!(await flagOk('chat', 'মেসেজ সিস্টেম এখন বন্ধ আছে'))) return;
   const box = document.getElementById('wChBox'), t = document.getElementById('wChT'); if (!box) return;
   const me = wMe(), uid = box.dataset.u, cid = box.dataset.c, text = img ? '' : ((t && t.value) || '').trim(); if (!text && !img) return;
   const sd = document.querySelector('.wcmp2 .sd'); if (sd) sd.disabled = true;
@@ -2577,7 +2589,7 @@ let wPhoto = '';
 function wSignup() {
   wPhoto = '';
   return wPage('লেখক অ্যাকাউন্ট', wAvatar('', 'ল') + wFld('আপনার নাম', 'ws-n', '', { ac: 'name' }) + wFld('ইমেইল', 'ws-e', '', { t: 'email', ac: 'username', im: 'email' }) +
-    wFld('মোবাইল নাম্বার', 'ws-m', '', { t: 'tel', ac: 'tel', im: 'numeric' }) + wSel('আপনার দেশ', 'ws-co', W_CO, '', 'দেশ সিলেক্ট করুন') + wSel('কোন ভাষায় লিখতে চান?', 'ws-lg', W_LG, 'bn', 'ভাষা সিলেক্ট করুন') + wPw('ws-p', 'পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)', 'new-password') +
+    wFld('মোবাইল নাম্বার', 'ws-m', '', { t: 'tel', ac: 'tel', im: 'numeric' }) + wSel('আপনার দেশ', 'ws-co', W_CO, '', 'দেশ সিলেক্ট করুন') + wFld('ফেসবুক আইডি/পেজ অথবা টিকটক লিংক *', 'ws-sl', '', { t: 'url', ac: 'url' }) + '<p class="wnote" style="margin:-4px 2px 10px;font-size:12px;opacity:.75">একজন একটাই অ্যাকাউন্ট খুলতে পারবেন — তাই আপনার আসল প্রোফাইল বা পেজের লিংক দিন (যেমন https://facebook.com/...)।</p>' + wSel('কোন ভাষায় লিখতে চান?', 'ws-lg', W_LG, 'bn', 'ভাষা সিলেক্ট করুন') + wPw('ws-p', 'পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)', 'new-password') +
     '<div class="werr" id="wErr" role="alert"></div><button class="wbtn" data-w="signup" id="wBtn">অ্যাকাউন্ট খুলুন</button>' +
     '<div style="text-align:center;margin-top:8px">আগে থেকেই অ্যাকাউন্ট আছে? <button class="wlink" data-w="go" data-href="/w">লগইন</button></div>', null, true);
 }
@@ -2847,11 +2859,12 @@ async function wClick(ev) {
       }
       case 'signup': {
         const n = wv('ws-n'), e = wv('ws-e'), m = wv('ws-m').replace(/[\s-]/g, ''), p = document.getElementById('ws-p').value;
-        if (!n) return wSet('নাম লিখুন'); if (!/^\S+@\S+\.\S+$/.test(e)) return wSet('সঠিক ইমেইল দিন'); const co = wv('ws-co'), lg = wv('ws-lg'); if (!co) return wSet('দেশ সিলেক্ট করুন'); if (!lg) return wSet('ভাষা সিলেক্ট করুন'); if (co === 'BD' ? !/^(\+?88)?01\d{9}$/.test(m) : !/^\+?\d{7,15}$/.test(m)) return wSet(co === 'BD' ? 'সঠিক মোবাইল নাম্বার দিন (০১XXXXXXXXX)' : 'সঠিক মোবাইল নাম্বার দিন (দেশের কোড সহ)'); if (p.length < 6) return wSet('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের দিন');
+        if (!n) return wSet('নাম লিখুন'); if (!/^\S+@\S+\.\S+$/.test(e)) return wSet('সঠিক ইমেইল দিন'); const co = wv('ws-co'), lg = wv('ws-lg'); if (!co) return wSet('দেশ সিলেক্ট করুন'); if (!lg) return wSet('ভাষা সিলেক্ট করুন'); const sl = wv('ws-sl'); if (!/^https?:\/\/(www\.|m\.|web\.|mbasic\.|vt\.|vm\.)?(facebook\.com|fb\.com|fb\.me|fb\.watch|tiktok\.com)\/\S+/i.test(sl)) return wSet('সঠিক ফেসবুক বা টিকটক লিংক দিন (https://facebook.com/... বা https://tiktok.com/@...)'); if (co === 'BD' ? !/^(\+?88)?01\d{9}$/.test(m) : !/^\+?\d{7,15}$/.test(m)) return wSet(co === 'BD' ? 'সঠিক মোবাইল নাম্বার দিন (০১XXXXXXXXX)' : 'সঠিক মোবাইল নাম্বার দিন (দেশের কোড সহ)'); if (p.length < 6) return wSet('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের দিন');
         wSet(''); wBusy(1);
         try {
+          if (!(await flagOk('reg', 'নতুন নিবন্ধন এখন বন্ধ আছে'))) { wBusy(0); return; }
           const cr = await WR.auth.createUserWithEmailAndPassword(e, p); WR.user = cr.user; try { await cr.user.updateProfile({ displayName: n }); } catch (x) { /* ignore */ }
-          const o = { name: n, email: e, phone: m, country: co, lang: lg, photo: wPhoto || '', bio: '', blocked: false, status: 'pending', createdAt: Date.now() }; await WR.fs.doc('authors/' + cr.user.uid).set(o); try { await WR.fs.doc('profiles/' + cr.user.uid).set({ name: n, photo: wPhoto || '', bio: '', country: co, lang: lg, followers: 0, createdAt: o.createdAt }); } catch (x) { /* ignore */ } WR.prof = o; store.set('jp_wemail', e); toast('অ্যাকাউন্ট তৈরি হয়েছে'); nav('/w', true);
+          const o = { name: n, email: e, phone: m, country: co, lang: lg, social: sl, photo: wPhoto || '', bio: '', blocked: false, status: 'pending', createdAt: Date.now() }; await WR.fs.doc('authors/' + cr.user.uid).set(o); try { await WR.fs.doc('profiles/' + cr.user.uid).set({ name: n, photo: wPhoto || '', bio: '', country: co, lang: lg, followers: 0, createdAt: o.createdAt }); } catch (x) { /* ignore */ } WR.prof = o; store.set('jp_wemail', e); toast('অ্যাকাউন্ট তৈরি হয়েছে'); nav('/w', true);
         } catch (x) { wSet(wErr(x)); wBusy(0); } break;
       }
       case 'wtheme': store.set('jp_wtheme', store.get('jp_wtheme', 'dark') === 'light' ? 'dark' : 'light'); document.body.classList.toggle('wdark', store.get('jp_wtheme', 'dark') !== 'light'); (function () { const x = location.hash; location.hash = x; try { route(); } catch (e) { /* ignore */ } })(); break;
@@ -2982,12 +2995,13 @@ function auLater(uid, key) { /* লেখকের প্রোফাইল ব�
 const avInit = (n) => esc(Array.from((n || 'ল').trim() || 'ল')[0]);
 const avBox = (photo, name, cls) => '<span class="sav ' + (cls || '') + '">' + (photo ? '<img src="' + esc(photo) + '" alt="">' : avInit(name)) + '</span>';
 function authorChip(b) {
-  return '<button class="achip" data-s="author" data-k="' + esc(akey(b)) + '" aria-label="লেখক ' + esc(b.author) + ' — লেখকের পেজ দেখুন"><span class="ava" data-aid="' + esc(b.authorId || '') + '">' + (b.authorPhoto && !b.authorId ? '<img src="' + esc(b.authorPhoto) + '" alt="">' : avInit(b.author)) + '</span><span class="an">' + esc(b.author) + '</span>' + VER + '<span class="ch">' + IC.chev + '</span></button><div class="vs vrow" data-vu="' + esc(b.authorId || '') + '"></div>';
+  return '<button class="achip" data-s="author" data-k="' + esc(akey(b)) + '" aria-label="লেখক ' + esc(b.author) + ' — লেখকের পেজ দেখুন"><span class="ava" data-aid="' + esc(b.authorId || '') + '">' + (b.authorPhoto && !b.authorId ? '<img src="' + esc(b.authorPhoto) + '" alt="">' : avInit(b.author)) + '</span><span class="an">' + esc(b.author) + '</span>' + VER + '<span class="ch">' + IC.chev + '</span></button><div class="upl" id="uplLine" hidden></div><div class="vs vrow" data-vu="' + esc(b.authorId || '') + '"></div>';
 }
 async function fillAuthorAv() {
   fillVip();
   const el = $('.achip .ava[data-aid]'); if (!el || !el.dataset.aid) return;
   const p = await getProfile(el.dataset.aid); if (p && p.photo && el.isConnected) el.innerHTML = '<img src="' + esc(p.photo) + '" alt="">';
+  try { const u = document.getElementById('uplLine'), an = $('.achip .an'); if (p && p.name && u && an && fzNorm(p.name) !== fzNorm(an.textContent)) { u.innerHTML = 'আপলোড করেছেন: <b>' + esc(p.name) + '</b>'; u.hidden = false; } } catch (e) { /* ignore */ }
 }
 /* ---- লেখক পেজ ---- */
 let auTab = 'books', auSt = 'সব', auBooks = [], auKey = '';
@@ -3131,7 +3145,7 @@ async function rvLoad(id) {
   catch (e) { if (w) w.innerHTML = '<div class="empty">রিভিউ লোড করা যায়নি।' + ((e && e.code === 'permission-denied') ? ' (রুলস পাবলিশ করুন)' : ' ইন্টারনেট দেখুন।') + '</div>'; }
 }
 async function rvSend() {
-  if (!FLG('cmt')) { toast('মন্তব্য এখন বন্ধ আছে'); return; }
+  if (!(await flagOk('cmt', 'মন্তব্য এখন বন্ধ আছে'))) return;
   const err = (m) => { const e = $('#rvErr'); if (e) e.textContent = m; };
   const t = ($('#rvTxt').value || '').trim(); if (!rvRate) return err('আগে স্টার রেটিং দিন'); if (!t) return err('মন্তব্য লিখুন');
   const a = getAcct(); if (!a) { toast('রিভিউ দিতে আগে আপনার নাম দিন'); openSheet(acctSheet()); return; }
@@ -3301,7 +3315,7 @@ async function route() {
   }
 }
 function afterRender(page, seg, params) {
-  try { flagsApply(); } catch (e) { /* ignore */ }
+  try { flagsApply(); flagsRefresh(); } catch (e) { /* ignore */ }
   if (page === 'home') { startAuto($('#featuredRail')); updateBell(); setTimeout(noticePopup, 1800); if (!window.__epChk) { window.__epChk = 1; newEpCheck(); } badgeCheck(); }
   if (page === 'search') {
     const inp = $('#qInput'); if (inp) { inp.focus(); const v = inp.value; inp.setSelectionRange(v.length, v.length); }
@@ -3320,7 +3334,8 @@ function afterRender(page, seg, params) {
 }
 
 /* ---------- হেডার ---------- */
-function headerTab() {
+function headerTab(noRight) {
+  if (noRight) return '<header class="hdr"><div class="hdr-row"><button class="icon-btn" data-act="go" data-href="/profile" aria-label="প্রোফাইল ও মেনু" data-i="menu"></button><div class="brand"><span>সাহিত্য</span></div></div></header>';
   return '<header class="hdr"><div class="hdr-row">' +
     '<button class="icon-btn" data-act="go" data-href="/profile" aria-label="প্রোফাইল ও মেনু" data-i="menu"></button>' +
     '<div class="brand"><span>সাহিত্য</span></div>' +
@@ -4202,6 +4217,47 @@ function cxDraw() {
   w.innerHTML = l.length ? l.map(cxCard).join('') : '<div class="empty">' + (cxMode === 'mine' ? 'আপনি এখনো কোনো পোস্ট করেননি।' : cxFlt === 'all' ? 'এখনো কোনো পোস্ট নেই। প্রথম পোস্টটি আপনি করুন।' : 'এই সময়ের কোনো পোস্ট নেই।') + '</div>';
   const f = $('#cxFlt'); if (f) f.innerHTML = cxFltHtml();
 }
+
+/* ===== পুশ নোটিফিকেশন (FCM) =====
+   ওয়েব: নিচের FCM_VAPID বসাতে হবে (Firebase Console → Project settings → Cloud Messaging → Web Push certificates → Generate key pair)
+   APK (Capacitor): @capacitor/push-notifications প্লাগিন ও google-services.json লাগবে (ZIP-এর README দেখুন) */
+const FCM_VAPID = 'BFADtb9hYh1Xhdd9FSLMlkWe3yEv6lkkNg38S9WhVCaoSq5EcBC3DJXZQYJwL_-m6mN7hUBU9p-SaHyqikfZpgs';
+const isNative = () => { try { return !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()); } catch (e) { return false; } };
+function loadMsgSdk() {
+  if (window.firebase && firebase.messaging) return Promise.resolve();
+  return new Promise((ok, no) => { const t = ['https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js', 'https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-messaging-compat.js']; let i = 0; (function go() { const s = document.createElement('script'); s.src = t[i]; s.onload = ok; s.onerror = () => { s.remove(); ++i < t.length ? go() : no(new Error('messaging')); }; document.head.append(s); })(); });
+}
+async function pushSave(tok, plat) {
+  store.set('jp_fcm', tok);
+  try { await api('/categories'); const f = window.__JPFS; if (f) await f.doc('fcmTokens/' + tok).set({ token: tok, platform: plat, at: Date.now() }); } catch (e) { /* ignore */ }
+}
+function pushSheet(tok) {
+  openSheet('<div style="padding:18px"><h3 style="margin:0 0 6px">পুশ নোটিফিকেশন চালু হয়েছে ✅</h3><p style="margin:0 0 10px;opacity:.8;font-size:14px">Firebase Console → Messaging → "Test on device"-এ এই টোকেনটি বসিয়ে টেস্ট করতে পারেন।</p><textarea id="pushTok" readonly rows="5" style="width:100%;font-size:12px;word-break:break-all">' + esc(tok) + '</textarea><button class="cxsend" style="margin-top:10px" data-act="push-copy">টোকেন কপি করুন</button></div>');
+}
+async function pushEnable(silent) {
+  try {
+    if (isNative()) {
+      const PN = window.Capacitor.Plugins && window.Capacitor.Plugins.PushNotifications;
+      if (!PN) { if (!silent) toast('এই APK-তে Push প্লাগিন যোগ করা নেই (README দেখুন)'); return; }
+      const p = await PN.requestPermissions(); if (p.receive !== 'granted') { if (!silent) toast('নোটিফিকেশনের অনুমতি দেওয়া হয়নি'); return; }
+      PN.addListener('registration', async (t) => { await pushSave(t.value, 'android'); if (!silent) pushSheet(t.value); });
+      PN.addListener('registrationError', (e) => { if (!silent) toast('নিবন্ধন হয়নি: ' + ((e && e.error) || '')); });
+      PN.addListener('pushNotificationReceived', (n) => { toast((n && n.title) || 'নতুন নোটিফিকেশন'); });
+      await PN.register(); return;
+    }
+    if (!('Notification' in window) || !('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) { if (!silent) toast('এই ব্রাউজারে পুশ নোটিফিকেশন চলে না'); return; }
+    if (!FCM_VAPID) { if (!silent) toast('VAPID কী বসানো হয়নি — কোডে FCM_VAPID-এ কী দিন'); return; }
+    if (silent && Notification.permission !== 'granted') return;
+    const perm = await Notification.requestPermission(); if (perm !== 'granted') { if (!silent) toast('নোটিফিকেশনের অনুমতি দেওয়া হয়নি'); return; }
+    await api('/categories'); await loadMsgSdk();
+    const reg = await navigator.serviceWorker.register('sw.js'); await navigator.serviceWorker.ready;
+    const m = firebase.messaging(); const tok = await m.getToken({ vapidKey: FCM_VAPID, serviceWorkerRegistration: reg });
+    if (!tok) { if (!silent) toast('টোকেন পাওয়া যায়নি'); return; }
+    try { m.onMessage((pl) => { const n = (pl && pl.notification) || {}; toast(n.title || 'নতুন নোটিফিকেশন'); }); } catch (e) { /* ignore */ }
+    await pushSave(tok, 'web'); if (!silent) pushSheet(tok);
+  } catch (e) { if (!silent) toast('চালু করা যায়নি: ' + ((e && (e.code || e.message)) || '')); }
+}
+setTimeout(() => { try { if (store.get('jp_fcm', '')) pushEnable(true); } catch (e) { /* ignore */ } }, 5000);
 async function cxFs() { try { await api('/categories'); } catch (e) { /* ignore */ } await cxAuth(); return SFB(); }
 async function cxLoad() {
   const w = $('#cxFeed'); if (!w) return; const f = await cxFs();
@@ -4217,7 +4273,7 @@ async function cxMyLoad() {
 }
 function viewCommunity() {
   cxMode = 'feed';
-  return headerTab() + '<main class="page cxw cxwl"><h2 class="cxttl">কমিউনিটি ডিসকাশন</h2>' +
+  return headerTab(true) + '<main class="page cxw cxwl"><h2 class="cxttl">কমিউনিটি ডিসকাশন</h2>' +
     '<div class="cxopts"><button data-cx="write">' + IC.pen + '<span>পোস্ট লিখুন</span></button><button data-cx="view">' + IC.chat + '<span>এক্সপ্লোর করুন</span></button></div>' +
     '<div id="cxCompose"></div><h3 class="cxx" id="cxExp">এক্সপ্লোর</h3><div class="cxflt" id="cxFlt">' + cxFltHtml() + '</div><div id="cxFeed"><div class="empty">লোড হচ্ছে…</div></div></main>';
 }
@@ -4301,7 +4357,7 @@ async function cxOpenCm(id) {
   const sh = $('#sheet'); if (sh && sh.querySelector('.cxsheet') && cxCur === id) openSheet(cxSheetHtml());
 }
 async function cxCmSend() {
-  if (!FLG('cmt')) { toast('মন্তব্য এখন বন্ধ আছে'); return; }
+  if (!(await flagOk('cmt', 'মন্তব্য এখন বন্ধ আছে'))) return;
   const err = (m) => { const e = $('#cxCe'); if (e) e.textContent = m; };
   const t = (($('#cxCt') || {}).value || '').trim(); if (!t) return err('মন্তব্য লিখুন');
   const f = await cxFs(); if (!f || !cxCur) return err('ইন্টারনেট সংযোগ নেই' + cxWhy()); const a = getAcct(); const id = cxCur;
@@ -4660,6 +4716,7 @@ function viewProfile() {
     accRow('lang', 'info', 'ভাষা', lg === 'en' ? 'English' : 'বাংলা', langOpts) +
     accRow('theme', 'moon', 'অ্যাপ থিম ও মোড', curPal.name + ' · ' + (modeSel === 'system' ? 'সিস্টেম' : th === 'dark' ? 'ডার্ক' : 'লাইট'), themeOpts) +
     accRow('chbar', 'palette', 'অধ্যায়ের বার কালার', CHB[cbk][0], chbOpts) +
+    mrow('bell', 'পুশ নোটিফিকেশন', store.get('jp_fcm', '') ? 'চালু আছে — টোকেন দেখতে চাপুন' : 'অ্যাপ বন্ধ থাকলেও নতুন খবর পাবেন', '', 'data-act="push-on"') +
     mrow('palette', 'হোম সাজসজ্জা', 'ফুলের ব্যাকগ্রাউন্ড ও শুভেচ্ছা', '<span class="sw' + (decoOn() ? ' on' : '') + '"></span>', 'data-act="deco-toggle"') +
     mrow('bell', 'রোজ পড়ার রিমাইন্ডার', getRem().on ? 'রোজ ' + remFmt(getRem().t) : 'বন্ধ আছে', '', 'data-act="rem-open"') +
     mrow('bell', 'নতুন পর্বের নোটিফিকেশন', 'ফলো করা লেখক/বুকমার্ক বইয়ের নতুন পর্ব এলে জানাবে', '<span class="sw' + (notifOn() ? ' on' : '') + '"></span>', 'data-act="notif-toggle"') + mrow('play', 'অ্যানিমেশন বন্ধ করুন', 'অটো স্ক্রল ও অন্যান্য অ্যানিমেশন থেমে যাবে', '<span class="sw' + (store.get('jp_noanim', false) === true ? ' on' : '') + '"></span>', 'data-act="anim-toggle"') + mrow('play', 'বটম প্লেয়ার চালু রাখুন', '', '<span class="sw' + (store.get('jp_minion', true) !== false ? ' on' : '') + '"></span>', 'data-act="mini-toggle"') + '</div>' +
@@ -4952,6 +5009,8 @@ async function onClick(ev) {
       case 'rem-go': { const x = $('#remB'); if (x) x.remove(); const l = store.get('jp_lastbook', null); if (l && l.id) nav('/read/' + enc(l.id) + '/' + l.n); else nav('/'); break; }
       case 'rem-x': { const x = $('#remB'); if (x) x.remove(); break; }
       case 'cont-x': { const dx = store.get('jp_contx', []); if (dx.indexOf(d.id) < 0) dx.push(d.id); store.set('jp_contx', dx); route(); break; }
+      case 'push-on': { const t = store.get('jp_fcm', ''); if (t) pushSheet(t); else pushEnable(false); break; }
+      case 'push-copy': { const t = $('#pushTok'); const v = t ? t.value : ''; try { navigator.clipboard.writeText(v).then(() => toast('কপি হয়েছে'), () => { t.select(); document.execCommand('copy'); toast('কপি হয়েছে'); }); } catch (e) { if (t) { t.select(); document.execCommand('copy'); toast('কপি হয়েছে'); } } break; }
       case 'deco-toggle': store.set('jp_deco', !decoOn()); applyDeco(); profRerender(); break;
       case 'notif-toggle': {
         if (notifOn()) { store.set('jp_notif', false); toast('নোটিফিকেশন বন্ধ হয়েছে'); }
@@ -5127,6 +5186,7 @@ retr(document.body);
 })();
 </script>
 <script>
+
 try { if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); } catch (e) {}
 </script>
 </body>
