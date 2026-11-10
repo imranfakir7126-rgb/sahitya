@@ -3498,7 +3498,7 @@ function forYouList(all) {
   return l;
 }
 function forYou(all) {
-  const l = forYouList(all); if (l.length < 2) return '';
+  if (!fyOn()) return ''; const l = forYouList(all); if (l.length < 2) return '';
   return secTitle('আপনার জন্য', '/foryou') + shelfOpen() + l.map((b) => CARD(b)).join('') + '</div>';
 }
 
@@ -4078,6 +4078,20 @@ document.addEventListener('input', (e) => { const t = e.target; if (t && (t.id =
 function openSheet(html) { $('#sheet').innerHTML = html; fillIcons($('#sheet')); $('#sheetWrap').hidden = false; }
 function closeSheet() { const w = $('#sheetWrap'); if (w) w.hidden = true; if (rd && inRead()) chromeShow(2000); }
 function closeDrawer() { const w = $('#drawerWrap'); if (w) w.hidden = true; }
+
+/* ===== আপনার জন্য সাজেশন: অন/অফ ও প্রথমবার জিজ্ঞাসা ===== */
+const fyOn = () => store.get('jp_fy', true) !== false;
+function fyAsk() {
+  try {
+    if (store.get('jp_fy_asked', false) === true) return;
+    const sp = document.getElementById('splash'); let busy = !!document.getElementById('maintOv');
+    if (sp && sp.isConnected) { const cs = getComputedStyle(sp); if (cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) > 0.05) busy = true; }
+    if (busy && (fyAsk.n = (fyAsk.n || 0) + 1) < 10) { setTimeout(fyAsk, 2000); return; }
+    store.set('jp_fy_asked', true);
+    openSheet('<div class="grab"></div><h3>আপনার জন্য সাজেশন</h3><div class="sub" style="margin:6px 0 16px;line-height:1.8">আপনি কি চান আপনার পছন্দের বইগুলো হোমের একদম উপরে “আপনার জন্য” সাজেশনে দেখাক?<br>চাইলে <b>অন</b> বাটনে, না চাইলে <b>অফ</b> বাটনে চাপুন। পরে চাইলে প্রোফাইল ও মেনু থেকে অন বা অফ করতে পারবেন।</div><div class="row" style="display:flex;gap:10px"><button class="btn ghost" style="flex:1" data-act="fy-off">অফ</button><button class="btn pur" style="flex:1" data-act="fy-on">অন</button></div>');
+  } catch (e) { /* ignore */ }
+}
+setTimeout(fyAsk, 3500);
 
 let rsTab = 'look'; let npTab = 'notes';
 const notesOf = (id) => (store.get('jp_notes', {})[id] || []);
@@ -4745,6 +4759,7 @@ function viewProfile() {
     accRow('lang', 'info', 'ভাষা', lg === 'en' ? 'English' : 'বাংলা', langOpts) +
     accRow('theme', 'moon', 'অ্যাপ থিম ও মোড', curPal.name + ' · ' + (modeSel === 'system' ? 'সিস্টেম' : th === 'dark' ? 'ডার্ক' : 'লাইট'), themeOpts) +
     accRow('chbar', 'palette', 'অধ্যায়ের বার কালার', CHB[cbk][0], chbOpts) +
+    mrow('read', 'আপনার জন্য সাজেশন', 'হোমের উপরে পছন্দের বই দেখান', '<span class="sw' + (fyOn() ? ' on' : '') + '"></span>', 'data-act="fy-toggle"') +
     mrow('palette', 'হোম সাজসজ্জা', 'ফুলের ব্যাকগ্রাউন্ড ও শুভেচ্ছা', '<span class="sw' + (decoOn() ? ' on' : '') + '"></span>', 'data-act="deco-toggle"') +
     mrow('bell', 'রোজ পড়ার রিমাইন্ডার', getRem().on ? 'রোজ ' + remFmt(getRem().t) : 'বন্ধ আছে', '', 'data-act="rem-open"') +
     mrow('bell', 'নতুন পর্বের নোটিফিকেশন', 'ফলো করা লেখক/বুকমার্ক বইয়ের নতুন পর্ব এলে জানাবে', '<span class="sw' + (notifOn() ? ' on' : '') + '"></span>', 'data-act="notif-toggle"') + mrow('play', 'অ্যানিমেশন বন্ধ করুন', 'অটো স্ক্রল ও অন্যান্য অ্যানিমেশন থেমে যাবে', '<span class="sw' + (store.get('jp_noanim', false) === true ? ' on' : '') + '"></span>', 'data-act="anim-toggle"') + mrow('play', 'বটম প্লেয়ার চালু রাখুন', '', '<span class="sw' + (store.get('jp_minion', true) !== false ? ' on' : '') + '"></span>', 'data-act="mini-toggle"') + '</div>' +
@@ -5037,6 +5052,8 @@ async function onClick(ev) {
       case 'rem-go': { const x = $('#remB'); if (x) x.remove(); const l = store.get('jp_lastbook', null); if (l && l.id) nav('/read/' + enc(l.id) + '/' + l.n); else nav('/'); break; }
       case 'rem-x': { const x = $('#remB'); if (x) x.remove(); break; }
       case 'cont-x': { const dx = store.get('jp_contx', []); if (dx.indexOf(d.id) < 0) dx.push(d.id); store.set('jp_contx', dx); route(); break; }
+      case 'fy-toggle': store.set('jp_fy', !fyOn()); store.set('jp_fy_asked', true); profRerender(); toast(fyOn() ? 'আপনার জন্য সাজেশন চালু' : 'আপনার জন্য সাজেশন বন্ধ'); break;
+      case 'fy-on': case 'fy-off': store.set('jp_fy', act === 'fy-on'); closeSheet(); toast(act === 'fy-on' ? 'আপনার জন্য সাজেশন চালু হয়েছে' : 'আপনার জন্য সাজেশন বন্ধ করা হয়েছে'); if (curPath === '/' || curPath === '') route(); break;
       case 'deco-toggle': store.set('jp_deco', !decoOn()); applyDeco(); profRerender(); break;
       case 'notif-toggle': {
         if (notifOn()) { store.set('jp_notif', false); toast('নোটিফিকেশন বন্ধ হয়েছে'); }
