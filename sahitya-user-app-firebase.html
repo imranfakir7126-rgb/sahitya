@@ -942,6 +942,25 @@ body.wdark .wnav{background:#0f1428;border-color:#252c52}
 .arow .folbtn.sm{flex:0 0 auto;border-radius:999px;padding:9px 18px;font-weight:700;border:0;background:#e63e6d;color:#fff;font-family:inherit;font-size:15px}
 .arow .folbtn.sm.on{background:var(--card2);color:var(--muted)}
 .arow .arl{justify-content:flex-start!important;width:auto}.arow .sav.big{width:56px;height:56px;min-width:56px;flex:0 0 56px;margin:0!important;font-size:24px}.arow .ai{align-items:flex-start;text-align:left}
+
+/* ===== v20 ===== */
+.bkbtns{align-items:stretch}
+.bkbtns .btn{height:44px!important;min-height:44px!important;padding:0 8px!important;white-space:nowrap;overflow:hidden;line-height:1}
+.bkbtns .btn span{white-space:nowrap}
+.bkbtns .dlall .dlt{white-space:nowrap;font-size:14px;gap:5px;max-width:100%;overflow:hidden}
+.avw{position:relative;flex:0 0 auto;display:block}
+.avw .vbj{position:absolute;right:-2px;bottom:-2px;width:20px;height:20px;display:grid;place-items:center;background:var(--bg);border-radius:50%}
+.avw .vbj svg{width:18px;height:18px;margin:0}
+.acard{position:relative}
+.arail .acard{width:84px;min-width:84px;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;text-align:center}
+.arail .acard .top,.arail .acard .st,.arail .acard .vs{display:none!important}
+.arail .acard .sav.big{width:74px;height:74px;font-size:30px;border:0;margin:0 auto 6px}
+.arail .acard .nm{display:block;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arail .acard .vbj{position:absolute;top:52px;left:calc(50% + 10px);width:20px;height:20px;display:grid;place-items:center;background:var(--bg);border-radius:50%}
+.arail .acard .vbj svg{width:18px;height:18px;margin:0}
+.asrch{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:0 14px;margin-bottom:14px}
+.asrch svg{width:22px;height:22px;flex:0 0 22px;color:var(--muted)}.asrch input{flex:1;background:none;border:0;outline:0;color:var(--text);font:inherit;font-size:16px;padding:14px 0;min-width:0}
+.arow .abio{display:block;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
 </style>
 
 <style id="jp-v3">
@@ -2046,6 +2065,7 @@ async function flagsRefresh(force) {
   try { const f = window.__JPFS || ((typeof WR !== 'undefined' && WR && WR.fs) ? WR.fs : null); if (!f) return; const d = await f.doc('config/flags').get(); FLAGS = d.exists ? d.data() : {}; flagsApply(); } catch (e) { /* ignore */ }
 }
 async function flagOk(k, msg) { await flagsRefresh(true); if (k === 'maint' ? !FLG('maint') : FLG(k)) return true; toast(msg || 'এই ফিচারটি এখন বন্ধ আছে'); return false; }
+document.addEventListener('input', (e) => { const q = e.target; if (!q || q.id !== 'aq') return; const s = q.value.trim().toLowerCase(); $$('.arow').forEach((r) => { r.style.display = !s || r.textContent.toLowerCase().indexOf(s) >= 0 ? '' : 'none'; }); });
 try { document.addEventListener('visibilitychange', () => { if (!document.hidden) flagsRefresh(true); }); setInterval(() => { if (!document.hidden) flagsRefresh(true); }, 30000); } catch (e) { /* ignore */ }
 const FLG = (k) => { try { const f = FLAGS || (db && db.flags) || {}; return (k === 'maint' || k === 'dark') ? f[k] === true : f[k] !== false; } catch (e) { return !(k === 'maint' || k === 'dark'); } };
 const IS_ADM = () => { try { return typeof admIn === 'function' && admIn(); } catch (e) { return false; } };
@@ -2434,11 +2454,11 @@ async function viewMsgTab() {
   const gate = (t, btn) => hd() + '<main class="page"><div class="wgate" style="padding:40px 10px;text-align:center"><div class="big" style="font-size:46px">💬</div><p style="line-height:1.8">' + t + '</p>' + btn + '</div></main>';
   const go = (h, l) => '<button class="btn pur" data-act="go" data-href="' + h + '">' + l + '</button>';
   const T1 = 'মেসেজ করতে আগে একটি <b>লেখক অ্যাকাউন্ট</b> খুলুন। তারপর যে লেখককে মেসেজ করতে চান তাঁকে ফলো দিন — তিনিও ফলো ব্যাক করলে মেসেজ করা যাবে।';
-  try { await withWTimeout(wInit(), 25000); } catch (e) { return gate(esc(wErr(e)), '<button class="btn pur" data-act="go" data-href="/msg">আবার চেষ্টা করুন</button>'); }
+  try { await withWTimeout(wInit(), 25000); } catch (e0) { try { await new Promise((r) => setTimeout(r, 1200)); await withWTimeout(wInit(), 25000); } catch (e) { return gate(esc(wErr(e)), '<button class="btn pur" data-act="go" data-href="/msg">আবার চেষ্টা করুন</button>'); } }
   if (!WR.user) return gate(T1, go('/w/signup', 'লেখক অ্যাকাউন্ট খুলুন') + '<div style="margin-top:12px"><button class="wlink" data-act="go" data-href="/w">আগে থেকেই অ্যাকাউন্ট আছে? লগইন করুন</button></div>');
   if (WR.prof && WR.prof.status !== 'approved') return gate('আপনার লেখক অ্যাকাউন্ট অ্যাডমিনের রিভিউয়ে আছে। অনুমোদন পেলে মেসেজ করতে পারবেন।', go('/w', 'অবস্থা দেখুন'));
   setTimeout(wRefreshBadges, 300);
-  return hd('<button class="icon-btn wbell" data-act="go" data-href="/w/notif" aria-label="নোটিফিকেশন">' + WI.bell + '<i class="wbdg" data-k="req"></i></button>') + '<main class="page">' + await wInboxBody() + '</main>';
+  return hd('<button class="icon-btn wbell" data-act="go" data-href="/w/notif" aria-label="নোটিফিকেশন">' + WI.bell + '<i class="wbdg" data-k="req"></i></button>') + '<main class="page">' + await (async () => { try { return await wInboxBody(); } catch (e) { return '<div class="wgate" style="padding:40px 10px;text-align:center"><p>মেসেজ লোড হয়নি। আবার চেষ্টা করুন।</p><button class="btn pur" data-act="go" data-href="/msg">আবার চেষ্টা করুন</button></div>'; } })() + '</main>';
 }
 
 const XI = {
@@ -3113,16 +3133,17 @@ async function fillVip() {
 async function fillListAv() {
   fillVip();
   const els = $$('[data-aid]'); for (const el of els) { const id = el.dataset.aid; if (!id) continue; const p = await getProfile(id); if (!el.isConnected) continue; if (el.classList.contains('sav') && p && p.photo) el.innerHTML = '<img src="' + esc(p.photo) + '" alt="">'; else if (el.classList.contains('fol') && p) el.textContent = fmtN(p.followers || 0); }
+  for (const el of $$('[data-pb]:not([data-pbd])')) { el.dataset.pbd = 1; const p = await getProfile(el.dataset.pb); if (p && p.bio && el.isConnected) el.textContent = String(p.bio).trim().replace(/\s+/g, ' '); }
   for (const el of $$('[data-pn]:not([data-pd])')) { el.dataset.pd = 1; const id = el.dataset.pn; if (!id) continue; const p = await getProfile(id); if (p && p.name && el.isConnected) el.textContent = String(p.name).trim(); }
 }
 function authRail(list) {
-  return '<div class="arail">' + list.map((a) => '<button class="acard" data-s="author" data-k="' + esc(a.k) + '" aria-label="লেখক ' + esc(a.n) + '"><span class="top"></span><span class="sav big" data-aid="' + esc(a.id) + '">' + (a.ph && !a.id ? '<img src="' + esc(a.ph) + '" alt="">' : avInit(a.n)) + '</span><span class="nm" data-pn="' + esc(a.id) + '">' + esc(a.n) + '</span><span class="vs" data-vu="' + esc(a.id) + '"></span><span class="st">' + IC.read + bn(a.c) + ' গল্প' + (a.id ? ' <i>•</i> ' + IC.user + '<b class="fol" data-aid="' + esc(a.id) + '">০</b>' : '') + '</span></button>').join('') + '</div>';
+  return '<div class="arail">' + list.map((a) => '<button class="acard" data-s="author" data-k="' + esc(a.k) + '" aria-label="লেখক ' + esc(a.n) + '"><span class="top"></span><span class="sav big" data-aid="' + esc(a.id) + '">' + (a.ph && !a.id ? '<img src="' + esc(a.ph) + '" alt="">' : avInit(a.n)) + '</span>' + (a.id ? '<span class="vbj">' + VER + '</span>' : '') + '<span class="nm" data-pn="' + esc(a.id) + '">' + esc(a.n) + '</span><span class="vs" data-vu="' + esc(a.id) + '"></span><span class="st">' + IC.read + bn(a.c) + ' গল্প' + (a.id ? ' <i>•</i> ' + IC.user + '<b class="fol" data-aid="' + esc(a.id) + '">০</b>' : '') + '</span></button>').join('') + '</div>';
 }
 async function viewAuthors() {
   const all = await api('/books'); const list = authorsOf(all); const fl = getFollow();
-  const row = (a) => '<div class="arow"><button class="arl" data-s="author" data-k="' + esc(a.k) + '" aria-label="লেখক ' + esc(a.n) + '"><span class="sav big" data-aid="' + esc(a.id) + '">' + (a.ph && !a.id ? '<img src="' + esc(a.ph) + '" alt="">' : avInit(a.n)) + '</span><span class="ai"><b data-pn="' + esc(a.id) + '">' + esc(a.n) + '</b><span class="ast"><span>' + bn(a.c) + ' টি গল্প</span>' + (a.id ? '<span><b class="fol" data-aid="' + esc(a.id) + '" style="display:inline;font-size:inherit">০</b> অনুসারী</span>' : '') + '</span></span></button>' +
+  const row = (a) => '<div class="arow"><button class="arl" data-s="author" data-k="' + esc(a.k) + '" aria-label="লেখক ' + esc(a.n) + '"><span class="avw"><span class="sav big" data-aid="' + esc(a.id) + '">' + (a.ph && !a.id ? '<img src="' + esc(a.ph) + '" alt="">' : avInit(a.n)) + '</span>' + (a.id ? '<span class="vbj">' + VER + '</span>' : '') + '</span><span class="ai"><b data-pn="' + esc(a.id) + '">' + esc(a.n) + '</b>' + (a.id ? '<small class="abio" data-pb="' + esc(a.id) + '"></small>' : '') + '<span class="ast"><span>' + bn(a.c) + ' টি গল্প</span>' + (a.id ? '<span><b class="fol" data-aid="' + esc(a.id) + '" style="display:inline;font-size:inherit">০</b> অনুসারী</span>' : '') + '</span></span></button>' +
     '<button class="folbtn sm' + (fl[a.k] ? ' on' : '') + '" data-s="alfol" data-k="' + esc(a.k) + '" data-n="' + esc(a.n) + '" data-u="' + esc(a.id) + '">' + (fl[a.k] ? 'ফলোয়িং' : 'ফলো') + '</button></div>';
-  return headerPage('সকল লেখকের তালিকা', true) + '<main class="page">' + (list.length ? list.map(row).join('') : '<div class="empty">কোনো লেখক পাওয়া যায়নি।</div>') + '</main>';
+  return headerPage('সকল লেখকের তালিকা', true) + '<main class="page"><label class="asrch">' + (IC.search || '') + '<input id="aq" type="search" placeholder="লেখক খুঁজুন (নাম লিখুন)..." autocomplete="off"></label>' + (list.length ? list.map(row).join('') : '<div class="empty">কোনো লেখক পাওয়া যায়নি।</div>') + '</main>';
 }
 /* ---- রিপোর্ট ---- */
 const REPORT_REASONS = ['স্প্যাম বা বিজ্ঞাপন', 'যৌন বা অশ্লীল কনটেন্ট', 'মিথ্যা বা বিভ্রান্তিকর তথ্য', 'অন্যের লেখা চুরি/কপি করা', 'সহিংসতা বা ঘৃণামূলক কনটেন্ট', 'ধর্মীয় বা সামাজিক অবমাননা', 'বইয়ে ত্রুটি (ভুল পর্ব, অসম্পূর্ণ)', 'অন্য কারণ'];
@@ -3360,7 +3381,7 @@ async function route() {
   } catch (e) {
     if (token !== renderToken) return;
     console.warn(e);
-    if (navigator.onLine === false || isNetErr(e.message)) { errorView('ইন্টারনেট সংযোগ পাওয়া যায়নি'); offSkip = false; offShow(true); } else errorView(e.message);
+    if (navigator.onLine === false || (isNetErr(e.message) && !window.__hasData)) { errorView('ইন্টারনেট সংযোগ পাওয়া যায়নি'); offSkip = false; offShow(true); } else if (isNetErr(e.message)) errorView('সার্ভার একটু ধীর সাড়া দিচ্ছে — আবার চেষ্টা করুন'); else errorView(e.message);
   }
 }
 function afterRender(page, seg, params) {
@@ -3506,7 +3527,7 @@ async function viewHome() {
   if (feat) h += feat.books.length ? '<div class="rail feat" id="featuredRail">' + feat.books.map((b, i) => featCard(b, i)).join('') + '</div>' : '<div class="empty">নির্বাচিত উপন্যাস এখনো ঠিক করা হয়নি।</div>';
   const rec = data.sections.find((x) => x.key === 'recent');
   if (rec && rec.books.length) h += secTitle(SEC_TITLES.recent || rec.title, '/list/recent') + '' + shelfOpen() + lim(rec.books).map((b) => CARD(b)).join('') + '</div>';
-  let authBlk = ''; try { const ab = await api('/books'); const al = authorsOf(ab); if (al.length) authBlk = secTitle('জনপ্রিয় লেখক', '/authors') + authRail(al.slice(0, 12)); } catch (e) { /* ignore */ }
+  let authBlk = ''; try { const ab = await api('/books'); const al = authorsOf(ab); if (al.length) authBlk = secTitle('সকল লেখক', '/authors') + authRail(al.slice(0, 12)); } catch (e) { /* ignore */ }
   const secs = data.sections.filter((x) => x.key !== 'recent' && x.key !== 'featured'); const midI = Math.floor(secs.length / 2); let sk = 0;
   if (!secs.length) h += authBlk;
   data.sections.forEach((s) => {
@@ -4933,7 +4954,7 @@ async function onClick(ev) {
         const fill = el.querySelector('.dlf'), lab = el.querySelector('.dlt'); el.classList.add('busy'); let ok = 0;
         try {
           for (let k = 0; k < tot; k++) {
-            lab.innerHTML = '<i class="spin"></i>ডাউনলোড হচ্ছে… ' + bn(k + 1) + '/' + bn(tot); fill.style.width = Math.round(k / tot * 100) + '%';
+            lab.innerHTML = '<i class="spin"></i>' + bn(k + 1) + '/' + bn(tot); fill.style.width = Math.round(k / tot * 100) + '%';
             const dlc = getDl()[d.id] && getDl()[d.id][bk.chapters[k].n];
             if (!dlc) storeChapter(d.id, await fetchChapter(d.id, bk.chapters[k].n));
             ok++; fill.style.width = Math.round(ok / tot * 100) + '%';
