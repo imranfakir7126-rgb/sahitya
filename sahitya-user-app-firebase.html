@@ -10,7 +10,21 @@
 <title>অনুলিপি</title>
 <script>try{if(/[?&]app=1/.test(location.search))localStorage.setItem('jp_apk','1');if(localStorage.getItem('jp_apk')==='1')document.title='অনুলিপি'}catch(e){}</script>
 <link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest">
-<style>/* ===== অনুলিপি — স্টাইল (গল্পনীড় ডিজাইন অনুসরণে; অধ্যায় লাল) ===== */
+<style>
+html:not([data-theme=dark]) .sheet:has(.cmsh){background:#fff;color:#1b1917;--text:#1b1917;--card:#f2f2f5;--card2:#f2f2f5;--line:#e3e3e8;--muted:#6b6b72}
+html:not([data-theme=dark]) .cmsh,html:not([data-theme=dark]) .cmb>b,html:not([data-theme=dark]) .cmb p{color:#1b1917}
+html:not([data-theme=dark]) .cmh .cmx2{background:#ececf0;color:#222}
+html:not([data-theme=dark]) .cmb .rnl,html:not([data-theme=dark]) .cmx,html:not([data-theme=dark]) .cmx button{color:#6b6b72}
+html:not([data-theme=dark]) .cmx .dl{color:#d63031}
+html:not([data-theme=dark]) .cmc{background:#fff;border-top-color:#e5e5ea}
+html:not([data-theme=dark]) .cmrow textarea{background:#f0f0f3;color:#1b1917}
+html:not([data-theme=dark]) .cmrow textarea::placeholder{color:#8a8a90}
+.wsr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);opacity:0}
+
+.auth2.alB .aprow2{flex-direction:column-reverse;align-items:center;text-align:center}.auth2.alB .apst2{justify-content:center}.auth2.alB .apinfo{width:100%}
+
+@keyframes slL{from{transform:translateX(38%);opacity:.2}to{transform:none;opacity:1}}@keyframes slR{from{transform:translateX(-38%);opacity:.2}to{transform:none;opacity:1}}.slL{animation:slL .26s ease-out}.slR{animation:slR .26s ease-out}
+/* ===== অনুলিপি — স্টাইল (গল্পনীড় ডিজাইন অনুসরণে; অধ্যায় লাল) ===== */
 :root{
   --bg:#f5f2ec;--card:#ffffff;--card2:#f0ece4;--text:#1b1917;--muted:#6f6a63;--line:#e1dbd0;
   --pur:#6a4fd1;--pur-soft:#d9cffb;--pur-on:#1d1240;
@@ -1482,6 +1496,7 @@ main.page.wp .wbtn.out{width:100%;margin:14px 0 0;padding:12px 16px;color:#ff6b6
   <button data-act="go" data-href="/community" data-nav="community"><span class="ico" data-i="post"></span><b>পোস্ট</b></button>
   <button data-act="go" data-href="/cat" data-nav="cat"><span class="ico" data-i="grid"></span><b>ক্যাটাগরি</b></button>
   <button data-act="go" data-href="/lib" data-nav="lib"><span class="ico" data-i="lib"></span><b>লাইব্রেরি</b></button>
+  <button data-act="go" data-href="/me" data-nav="me"><span class="ico" data-i="user"></span><b>প্রোফাইল</b></button>
 </nav>
 
 <div id="sheetWrap" class="sheet-wrap" hidden>
@@ -1726,6 +1741,16 @@ function fzMatch(q, b) {
   if (hay.indexOf(nq) >= 0 || hay.replace(/ /g, '').indexOf(nq.replace(/ /g, '')) >= 0) return true;
   const words = hay.split(' '); return nq.split(' ').every((t) => hay.indexOf(t) >= 0 || (t.length >= 3 && words.some((w) => w.length >= 3 && fzLev(t, w) <= 1)));
 }
+function fzScore(q, b) {
+  const nq = fzNorm(q); if (!nq) return 1; const t = fzNorm(b.title), a = fzNorm(b.author), c = fzNorm(b.cat);
+  const ws = (s) => s.split(' ').some((w) => w.indexOf(nq) === 0);
+  if (t === nq) return 100; if (t.indexOf(nq) === 0) return 90; if (ws(t)) return 80;
+  if (a === nq) return 75; if (a.indexOf(nq) === 0 || ws(a)) return 65; if (c === nq || ws(c)) return 55;
+  if (nq.length <= 2) return 0;
+  if (t.indexOf(nq) >= 0) return 50; if (a.indexOf(nq) >= 0) return 40;
+  if (fzNorm(b.desc || '').indexOf(nq) >= 0) return 10;
+  return fzMatch(q, b) ? 5 : 0;
+}
 const isText = (b) => (b.type || 'text') !== 'audio';
 const texts = () => db.books.filter(isText);
 const toneMemo = {};
@@ -1809,7 +1834,7 @@ function handleSync(method, full, body, user) {
     if (cat) list = list.filter((b) => b.cat === cat);
     const au = q.get('author'); if (au) { const tg = keyToCanon(au); list = list.filter((b) => canonKey(b) === tg); }
     if (ids) { const set = ids.split(',').filter(Boolean); list = list.filter((b) => set.indexOf(b.id) >= 0); }
-    if (s) list = list.filter((b) => fzMatch(s, b));
+    if (s) list = list.map((b) => ({ b, sc: fzScore(s, b) })).filter((x) => x.sc > 0).sort((x, y) => y.sc - x.sc).map((x) => x.b);
     return pubList(list);
   }
   if ((r = /^\/books\/([\w-]+)$/.exec(p)) && method === 'GET') {
@@ -1859,19 +1884,19 @@ async function loadDb() {
       audio: (x.audio || []).filter((a) => a.p).sort((a, b) => a.n - b.n).map((a) => ({ n: a.n, title: a.title, src: a.url })) }; });
   const home = []; const oldTx = {}; try { ((db && db.books) || []).forEach((ob) => ob.chapters.forEach((oc) => { if (oc.content != null) oldTx[ob.id + ':' + oc.cid] = oc.content; })); books.forEach((nb) => nb.chapters.forEach((nc) => { const k = nb.id + ':' + nc.cid; if (k in oldTx) nc.content = oldTx[k]; })); } catch (e) { /* ignore */ }
   db = { categories: cleanCats(cs.docs.map((d) => d.data().name)), books, stats, reactions: {}, lists: cfg.lists || {}, settings: Object.assign({}, window.JP_SEEDLIB.DEFAULT_SETTINGS, cfg.settings || {}),
-    notices: ns.docs.map((d) => Object.assign({ id: d.id }, d.data())), config: { homeSections: home }, layout: cfg.homeLayout || {}, quizzes: ((cfg.quizzes && cfg.quizzes.items) || []), flags: cfg.flags || {} };
+    notices: ns.docs.map((d) => Object.assign({ id: d.id }, d.data())), config: { homeSections: home }, layout: cfg.homeLayout || {}, quizzes: ((cfg.quizzes && cfg.quizzes.items) || []), flags: cfg.flags || {}, catImages: cfg.catImages || {} };
   const lr = LS.get('jp_react'), rs = LS.get('jp_rsync');
   books.forEach((b) => { INCL[b.id] = rs[b.id] || null; if (b.id in lr) { adjR(b, INCL[b.id], lr[b.id] || null); INCL[b.id] = lr[b.id] || null; db.reactions[b.id] = { [uid0]: lr[b.id] }; } });
   T0 = Date.now(); window.__stale = false; window.__hasData = true; snapSave(); try { flagsApply(); applyTheme(); } catch (e) { /* ignore */ }
 }
 /* অফলাইন স্ন্যাপশট: শেষবার পাওয়া বইয়ের তালিকা ফোনে রাখা হয়, ইন্টারনেট না থাকলে সেটাই দেখানো হয় */
 function snapSave() {
-  try { const o = { t: Date.now(), categories: db.categories, settings: db.settings, lists: db.lists, layout: db.layout, notices: db.notices, quizzes: db.quizzes, flags: db.flags, books: db.books.map((b) => Object.assign({}, b, { content: undefined })), stats: {} };
+  try { const o = { t: Date.now(), categories: db.categories, settings: db.settings, lists: db.lists, layout: db.layout, notices: db.notices, quizzes: db.quizzes, flags: db.flags, catImages: db.catImages, books: db.books.map((b) => Object.assign({}, b, { content: undefined })), stats: {} };
     localStorage.setItem('jp_dbsnap', JSON.stringify(o)); } catch (e) { try { localStorage.removeItem('jp_dbsnap'); } catch (x) { /* ignore */ } }
 }
 function snapLoad() {
   try { const o = JSON.parse(localStorage.getItem('jp_dbsnap') || 'null'); if (!o || !o.books || !o.books.length) return false;
-    db = { categories: o.categories || [], books: o.books, stats: {}, reactions: {}, lists: o.lists || {}, layout: o.layout || {}, settings: o.settings || {}, notices: o.notices || [], quizzes: o.quizzes || [], flags: o.flags || {}, config: { homeSections: [] } };
+    db = { categories: o.categories || [], books: o.books, stats: {}, reactions: {}, lists: o.lists || {}, layout: o.layout || {}, settings: o.settings || {}, notices: o.notices || [], quizzes: o.quizzes || [], flags: o.flags || {}, catImages: o.catImages || {}, config: { homeSections: [] } };
     window.__stale = true; window.__hasData = true; T0 = Date.now() - 50000; return true; } catch (e) { return false; }
 }
 window.__jpFresh = () => { T0 = 0; };
@@ -2497,9 +2522,9 @@ function wRenderMsgs(s, me) {
     const m = d.data(); wMsgs[d.id] = m; const re = m.re || {}, cnt = {}; Object.keys(re).forEach((u) => { cnt[re[u]] = (cnt[re[u]] || 0) + 1; });
     const rr = Object.keys(cnt).map((e) => '<span class="wre' + (re[me] === e ? ' me' : '') + '">' + esc(e) + (cnt[e] > 1 ? ' ' + bn(cnt[e]) : '') + '</span>').join('');
     const at = m.at || 0, sep = (!prev || at - prev > 1800000) ? '<div class="wsep">' + wSepT(at) + '</div>' : ''; prev = at;
-    return sep + '<div class="wb ' + (m.from === me ? 'me' : 'th') + '" data-mid="' + d.id + '">' + (m.rp ? '<div class="wq"><b>' + (m.rp.f === me ? 'আপনি' : esc(on)) + '</b>' + esc(m.rp.t) + '</div>' : '') + (m.img ? '<img class="wim" src="' + esc(m.img) + '" alt="ছবি">' : '') + (m.text ? esc(m.text) : '') + '<small>' + wTm(m.at) + '</small>' + (rr ? '<div class="wres">' + rr + '</div>' : '') + '</div>';
+    return sep + '<div class="wb ' + (m.from === me ? 'me' : 'th') + '" data-mid="' + d.id + '" role="group">' + '<button class="wsr" data-wm="menu" data-m="' + d.id + '">মেসেজ মেনু</button>' + (m.rp ? '<div class="wq"><b>' + (m.rp.f === me ? 'আপনি' : esc(on)) + '</b>' + esc(m.rp.t) + '</div>' : '') + (m.img ? '<img class="wim" src="' + esc(m.img) + '" alt="ছবি">' : '') + (m.text ? esc(m.text) : '') + '<small>' + wTm(m.at) + '</small>' + (rr ? '<div class="wres">' + rr + '</div>' : '') + '</div>';
   });
-  box.innerHTML = wOpenHd(box) + (list.join('') || '<div class="wempty">এখনো কোনো মেসেজ নেই। প্রথম মেসেজটি পাঠান 👋</div>');
+  const hh = wOpenHd(box) + (list.join('') || '<div class="wempty">এখনো কোনো মেসেজ নেই। প্রথম মেসেজটি পাঠান 👋</div>'); if (box.__h !== hh) { box.__h = hh; box.innerHTML = hh; }
   wFgLoad(box.dataset.u);
 }
 function wRpShow() { const b = document.getElementById('wRpBar'); if (!b) return; if (!wReply) { b.hidden = true; b.innerHTML = ''; return; } const bx = document.getElementById('wChBox'); b.hidden = false; b.innerHTML = '<span>↩ <b>' + (wReply.f === wMe() ? 'আপনি' : esc((bx && bx.dataset.n) || 'লেখক')) + '</b>: ' + esc(wReply.t) + '</span><button data-wm="rpx" aria-label="বাতিল">✕</button>'; }
@@ -2571,6 +2596,7 @@ document.addEventListener('click', async (ev) => {
   try {
     switch (a) {
       case 'close': wModalX(); break;
+      case 'menu': wMsgMenu(el.dataset.m); break;
       case 'react': { const bx = document.getElementById('wChBox'), m = wMsgs[el.dataset.m] || {}, e = el.dataset.e; wModalX(); await WR.fs.doc('chats/' + bx.dataset.c + '/msgs/' + el.dataset.m).update({ ['re.' + me]: (m.re || {})[me] === e ? firebase.firestore.FieldValue.delete() : e }); break; }
       case 'copy': { const m = wMsgs[el.dataset.m]; wModalX(); if (m) wCopy(m.text || ''); break; }
       case 'reply': { const m = wMsgs[el.dataset.m]; wModalX(); if (m) { wReply = { t: (m.text || '').slice(0, 100), f: m.from }; wRpShow(); const t = document.getElementById('wChT'); if (t) t.focus(); } break; }
@@ -2652,7 +2678,7 @@ function wLogin() {
 let wPhoto = '';
 function wSignup() {
   wPhoto = '';
-  return wPage('লেখক অ্যাকাউন্ট', '<div class="wseg"><button class="" data-w="go" data-href="/w">লগইন</button><button class="on" data-w="go" data-href="/w/signup">নিবন্ধন</button></div>' + wAvatar('', 'ল') + wFld('আপনার নাম', 'ws-n', '', { ac: 'name' }) + wFld('ইমেইল', 'ws-e', '', { t: 'email', ac: 'username', im: 'email' }) +
+  return wPage('লেখক অ্যাকাউন্ট', '<div class="wseg"><button class="" data-w="go" data-href="/w">লগইন</button><button class="on" data-w="go" data-href="/w/signup">নিবন্ধন</button></div>' + wAvatar('', 'ল') + wFld('আপনার নাম', 'ws-n', '', { ac: 'name' }) + wFld('ইউজারনেম * (a-z, 0-9, _ .)', 'ws-un', '', { ac: 'username' }) + wFld('ইমেইল', 'ws-e', '', { t: 'email', ac: 'username', im: 'email' }) +
     wFld('মোবাইল নাম্বার', 'ws-m', '', { t: 'tel', ac: 'tel', im: 'numeric' }) + wFld('হোয়াটসঅ্যাপ নাম্বার * (যেটা চালু আছে)', 'ws-wa', '', { t: 'tel', ac: 'tel', im: 'numeric' }) + wSel('আপনার দেশ', 'ws-co', W_CO, '', 'দেশ সিলেক্ট করুন') + wFld('ফেসবুক আইডি/পেজ অথবা টিকটক লিংক *', 'ws-sl', '', { t: 'url', ac: 'url' }) + '<p class="wnote" style="margin:-4px 2px 10px;font-size:12px;opacity:.75">একজন একটাই অ্যাকাউন্ট খুলতে পারবেন — তাই আপনার আসল প্রোফাইল বা পেজের লিংক দিন (যেমন https://facebook.com/...)।</p>' + wSel('কোন ভাষায় লিখতে চান?', 'ws-lg', W_LG, 'bn', 'ভাষা সিলেক্ট করুন') + wPw('ws-p', 'পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)', 'new-password') +
     '<div class="werr" id="wErr" role="alert"></div><button class="wbtn" data-w="signup" id="wBtn">অ্যাকাউন্ট খুলুন</button>' +
     '<div style="text-align:center;margin-top:8px">আগে থেকেই অ্যাকাউন্ট আছে? <button class="wlink" data-w="go" data-href="/w">লগইন</button></div>', null, true);
@@ -2924,12 +2950,12 @@ async function wClick(ev) {
       }
       case 'signup': {
         const n = wv('ws-n'), e = wv('ws-e'), m = wv('ws-m').replace(/[\s-]/g, ''), p = document.getElementById('ws-p').value;
-        if (!n) return wSet('নাম লিখুন'); if (!/^\S+@\S+\.\S+$/.test(e)) return wSet('সঠিক ইমেইল দিন'); const co = wv('ws-co'), lg = wv('ws-lg'); if (!co) return wSet('দেশ সিলেক্ট করুন'); if (!lg) return wSet('ভাষা সিলেক্ট করুন'); const wa = wv('ws-wa').replace(/[\s-]/g, ''); if (co === 'BD' ? !/^(\+?88)?01[3-9]\d{8}$/.test(wa) : !/^\+?\d{7,15}$/.test(wa)) return wSet('সঠিক হোয়াটসঅ্যাপ নাম্বার দিন — যেটা চালু আছে (০১XXXXXXXXX)'); const sl = wv('ws-sl'); if (!/^https?:\/\/(www\.|m\.|web\.|mbasic\.|vt\.|vm\.)?(facebook\.com|fb\.com|fb\.me|fb\.watch|tiktok\.com)\/\S+/i.test(sl)) return wSet('সঠিক ফেসবুক বা টিকটক লিংক দিন (https://facebook.com/... বা https://tiktok.com/@...)'); if (co === 'BD' ? !/^(\+?88)?01\d{9}$/.test(m) : !/^\+?\d{7,15}$/.test(m)) return wSet(co === 'BD' ? 'সঠিক মোবাইল নাম্বার দিন (০১XXXXXXXXX)' : 'সঠিক মোবাইল নাম্বার দিন (দেশের কোড সহ)'); if (p.length < 6) return wSet('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের দিন');
+        if (!n) return wSet('নাম লিখুন'); const un = wv('ws-un').toLowerCase().replace(/^@/, ''); if (!/^[a-z0-9_.]{3,20}$/.test(un)) return wSet('ইউজারনেম ৩–২০ অক্ষর, শুধু a-z, 0-9, _ বা . দিন'); if (!/^\S+@\S+\.\S+$/.test(e)) return wSet('সঠিক ইমেইল দিন'); const co = wv('ws-co'), lg = wv('ws-lg'); if (!co) return wSet('দেশ সিলেক্ট করুন'); if (!lg) return wSet('ভাষা সিলেক্ট করুন'); const wa = wv('ws-wa').replace(/[\s-]/g, ''); if (co === 'BD' ? !/^(\+?88)?01[3-9]\d{8}$/.test(wa) : !/^\+?\d{7,15}$/.test(wa)) return wSet('সঠিক হোয়াটসঅ্যাপ নাম্বার দিন — যেটা চালু আছে (০১XXXXXXXXX)'); const sl = wv('ws-sl'); if (!/^https?:\/\/(www\.|m\.|web\.|mbasic\.|vt\.|vm\.)?(facebook\.com|fb\.com|fb\.me|fb\.watch|tiktok\.com)\/\S+/i.test(sl)) return wSet('সঠিক ফেসবুক বা টিকটক লিংক দিন (https://facebook.com/... বা https://tiktok.com/@...)'); if (co === 'BD' ? !/^(\+?88)?01\d{9}$/.test(m) : !/^\+?\d{7,15}$/.test(m)) return wSet(co === 'BD' ? 'সঠিক মোবাইল নাম্বার দিন (০১XXXXXXXXX)' : 'সঠিক মোবাইল নাম্বার দিন (দেশের কোড সহ)'); if (p.length < 6) return wSet('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের দিন');
         wSet(''); wBusy(1);
         try {
           if (!(await flagOk('reg', 'নতুন নিবন্ধন এখন বন্ধ আছে'))) { wBusy(0); return; }
           const cr = await WR.auth.createUserWithEmailAndPassword(e, p); WR.user = cr.user; try { await cr.user.updateProfile({ displayName: n }); } catch (x) { /* ignore */ }
-          const o = { name: n, email: e, phone: m, whatsapp: wa, country: co, lang: lg, social: sl, photo: wPhoto || '', bio: '', blocked: false, status: 'pending', createdAt: Date.now() }; await WR.fs.doc('authors/' + cr.user.uid).set(o); try { await WR.fs.doc('profiles/' + cr.user.uid).set({ name: n, photo: wPhoto || '', bio: '', country: co, lang: lg, followers: 0, createdAt: o.createdAt }); } catch (x) { /* ignore */ } WR.prof = o; store.set('jp_wemail', e); toast('অ্যাকাউন্ট তৈরি হয়েছে'); nav('/w', true);
+          const o = { name: n, username: un, email: e, phone: m, whatsapp: wa, country: co, lang: lg, social: sl, photo: wPhoto || '', bio: '', blocked: false, status: 'pending', createdAt: Date.now() }; try { await WR.fs.doc('usernames/' + un).set({ uid: cr.user.uid, at: o.createdAt }); } catch (x) { try { await cr.user.delete(); } catch (y) { /* ignore */ } WR.user = null; wSet('এই ইউজারনেম আগেই নেওয়া — অন্য একটি দিন'); wBusy(0); return; } await WR.fs.doc('authors/' + cr.user.uid).set(o); try { await WR.fs.doc('profiles/' + cr.user.uid).set({ name: n, username: un, photo: wPhoto || '', bio: '', country: co, lang: lg, followers: 0, createdAt: o.createdAt }); } catch (x) { /* ignore */ } WR.prof = o; store.set('jp_wemail', e); toast('অ্যাকাউন্ট তৈরি হয়েছে'); nav('/w', true);
         } catch (x) { wSet(wErr(x)); wBusy(0); } break;
       }
       case 'wtheme': store.set('jp_wtheme', store.get('jp_wtheme', 'dark') === 'light' ? 'dark' : 'light'); document.body.classList.toggle('wdark', store.get('jp_wtheme', 'dark') !== 'light'); (function () { const x = location.hash; location.hash = x; try { route(); } catch (e) { /* ignore */ } })(); break;
@@ -3081,7 +3107,7 @@ async function viewAuthor(key) {
   const reads = list.reduce((a, b) => a + (b.reads || 0), 0), likes = list.reduce((a, b) => a + (b.likes || 0), 0);
   const fol = isFollow(key);
   const bio = (p && p.bio) || '';
-  return headerPage('লেখক', true) + '<main class="page auth2"><div class="aprow2"><div class="apinfo"><h2>' + esc(name) + VER + '<span class="vs" data-vu="' + esc(uid) + '"></span></h2>' +
+  return headerPage('লেখক', true) + '<main class="page auth2' + (FLAGS && FLAGS.alay === 'b' ? ' alB' : '') + '"><div class="aprow2"><div class="apinfo"><h2>' + esc(name) + VER + '<span class="vs" data-vu="' + esc(uid) + '"></span></h2>' + (p && p.username ? '<div class="apun" style="opacity:.7;font-size:13px;margin-top:-2px">@' + esc(p.username) + '</div>' : '') +
     '<div class="apst2"><span>' + XI.user + '<b id="folN">' + fmtN(Math.max(0, (p && p.followers) || 0)) + '</b>ফলোয়ার</span><span>' + XI.heart + '<b>' + fmtN(likes) + '</b>লাইক</span><span>' + XI.eye + '<b>' + fmtN(reads) + '</b>ভিউ</span></div></div>' + avBox((p && p.photo) || (list.find((b) => b.authorPhoto) || {}).authorPhoto, name, 'big') + '</div>' +
     '<div class="apbk">' + XI.book + '<span><b>' + bn(list.length) + '</b> টি বই</span></div>' +
     '<div class="apbtns' + (uid ? '' : ' one') + '"><button class="folbtn wide' + (fol ? ' on' : '') + '" data-s="follow" data-k="' + esc(key) + '" data-n="' + esc(name) + '" aria-pressed="' + fol + '">' + (fol ? '✓ ফলো করছেন' : XI.uplus + ' ফলো করুন') + '</button>' + (uid ? '<button class="folbtn wide" data-wm="open" data-u="' + esc(uid) + '" data-n="' + esc(name) + '" data-k="' + esc(key) + '">' + XI.mail + ' মেসেজ</button>' : '') + '</div>' +
@@ -3092,9 +3118,9 @@ function auBody() {
     const p = window.__auP; return '<div class="pcard"><div style="font-weight:700;margin-bottom:6px">লেখকের সম্পর্কে</div><div style="color:var(--muted);line-height:1.7">' + (p && p.bio ? esc(p.bio) : 'লেখক এখনো নিজের সম্পর্কে কিছু লেখেননি।') + '</div>' + (p && p.createdAt ? '<div style="margin-top:10px;color:var(--muted);font-size:13px">যোগ দিয়েছেন: ' + bn(new Date(p.createdAt).toLocaleDateString('en-GB')) + '</div>' : '') + '</div>';
   }
   const run = auBooks.filter((b) => b.status !== 'সমাপ্ত').length, dn = auBooks.length - run;
-  const L = auSt === 'সব' ? auBooks : auBooks.filter((b) => (auSt === 'সমাপ্ত') === (b.status === 'সমাপ্ত'));
-  const ci = { 'সব': XI.grid, 'চলমান': XI.play, 'সমাপ্ত': XI.ok };
-  return '<div class="aufl2"><h3>' + XI.stack + 'প্রকাশিত বইসমূহ</h3><span class="cn">' + bn(auBooks.length) + ' টি বই</span></div><div class="fchips" style="margin:0 0 14px;padding:0">' + [['সব', auBooks.length], ['চলমান', run], ['সমাপ্ত', dn]].map((x) => '<button class="chip' + (auSt === x[0] ? ' on' : '') + '" data-s="au-st" data-v="' + x[0] + '">' + ci[x[0]] + x[0] + '</button>').join('') + '</div>' +
+  const sv = getSaved(); const L = auSt === 'সব' ? auBooks : auSt === 'প্রিয়' ? auBooks.filter((b) => sv.indexOf(b.id) >= 0) : auBooks.filter((b) => (auSt === 'সমাপ্ত') === (b.status === 'সমাপ্ত'));
+  const ci = { 'সব': XI.grid, 'প্রিয়': XI.heart, 'সমাপ্ত': XI.ok, 'চলমান': XI.play };
+  return '<div class="aufl2"><h3>' + XI.stack + 'প্রকাশিত বইসমূহ</h3><span class="cn">' + bn(auBooks.length) + ' টি বই</span></div><div class="fchips" style="margin:0 0 14px;padding:0">' + [['সব', auBooks.length], ['প্রিয়', auBooks.filter((b) => sv.indexOf(b.id) >= 0).length], ['সমাপ্ত', dn], ['চলমান', run]].map((x) => '<button class="chip' + (auSt === x[0] ? ' on' : '') + '" data-s="au-st" data-v="' + x[0] + '">' + ci[x[0]] + x[0] + '</button>').join('') + '</div>' +
     (L.length ? '<div class="books grid">' + L.map((b) => pcard(b, b.status === 'সমাপ্ত' ? 'সমাপ্ত' : 'চলমান')).join('') + '</div>' : '<div class="empty">কোনো বই নেই।</div>');
 }
 let __folBusy = false;
@@ -3334,7 +3360,7 @@ async function route() {
   if (navigator.onLine !== false) offShow(false);
   document.body.classList.toggle('reading', page === 'read'); document.body.classList.toggle('bookpg', page === 'book'); document.body.classList.remove('lmode', 'chrome-off'); clearTimeout(chromeT);
   document.body.style.overflow = ''; document.body.style.position = ''; document.documentElement.style.overflow = '';
-  const isTab = page === 'home' || page === 'community' || page === 'lib' || (page === 'cat' && !seg[1]);
+  const isTab = page === 'home' || page === 'community' || page === 'lib' || page === 'me' || (page === 'cat' && !seg[1]);
   document.body.classList.toggle('sub', !isTab);
   if (!isTab) { $('#mini').hidden = true; document.body.classList.remove('has-mini'); }
   setNavActive(isTab ? page : '');
@@ -3361,6 +3387,7 @@ async function route() {
     else if (page === 'authors') { loadingView(); html = await viewAuthors(); }
     else if (page === 'following') { html = headerPage('ফলো করা লেখক', true) + '<main class="page">' + followedHtml() + '</main>'; }
     else if (page === 'w') { swrShow(swrKey); html = await viewWriter(seg); }
+    else if (page === 'me') { html = viewMe(); }
     else if (page === 'profile') { html = viewProfile(); }
     else if (page === 'goals') { html = viewGoals(); }
     else if (page === 'privacy') { loadingView(); html = await viewPrivacy(); }
@@ -3391,7 +3418,7 @@ function afterRender(page, seg, params) {
     const inp = $('#qInput'); if (inp) { inp.focus(); const v = inp.value; inp.setSelectionRange(v.length, v.length); }
     runSearch(params.get('q') || '');
   }
-  if (page === 'profile') refreshTime();
+  if (page === 'profile' || page === 'me') refreshTime();
   if (page === 'goals') fillGoalBooks();
   if (page === 'community') cxAfter();
   if (page === 'myposts') cxMyLoad();
@@ -3405,9 +3432,9 @@ function afterRender(page, seg, params) {
 
 /* ---------- হেডার ---------- */
 function headerTab(noRight) {
-  if (noRight) return '<header class="hdr"><div class="hdr-row"><button class="icon-btn" data-act="go" data-href="/profile" aria-label="প্রোফাইল ও মেনু" data-i="menu"></button><div class="brand"><span>' + APPN + '</span></div></div></header>';
+  if (noRight) return '<header class="hdr"><div class="hdr-row"><button class="icon-btn" data-act="go" data-href="/profile" aria-label="মেনু" data-i="menu"></button><div class="brand"><span>' + APPN + '</span></div></div></header>';
   return '<header class="hdr"><div class="hdr-row">' +
-    '<button class="icon-btn" data-act="go" data-href="/profile" aria-label="প্রোফাইল ও মেনু" data-i="menu"></button>' +
+    '<button class="icon-btn" data-act="go" data-href="/profile" aria-label="মেনু" data-i="menu"></button>' +
     '<div class="brand"><span>' + APPN + '</span></div>' +
     '<button class="icon-btn hq hq-chat" data-act="go" data-href="/msg" aria-label="মেসেজ" data-i="chat"></button>' +
     '<button class="icon-btn hq hq-w" data-act="go" data-href="/w" aria-label="রাইটার প্যানেল" data-i="pen"></button>' +
@@ -4079,6 +4106,36 @@ function openSheet(html) { $('#sheet').innerHTML = html; fillIcons($('#sheet'));
 function closeSheet() { const w = $('#sheetWrap'); if (w) w.hidden = true; if (rd && inRead()) chromeShow(2000); }
 function closeDrawer() { const w = $('#drawerWrap'); if (w) w.hidden = true; }
 
+(function () { let x0 = 0, y0 = 0, on = false; const O = ['সব', 'প্রিয়', 'সমাপ্ত', 'চলমান'];
+  document.addEventListener('touchstart', (e) => { const b = e.target.closest && e.target.closest('#auBody'); on = !!b; if (b) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; } }, { passive: true });
+  document.addEventListener('touchend', (e) => { if (!on) return; on = false; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; if (Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx) * 0.6) return; if (typeof auTab !== 'undefined' && auTab === 'about') return; const i = O.indexOf(auSt), j = i + (dx < 0 ? 1 : -1); if (i < 0 || j < 0 || j >= O.length) return; auSt = O[j]; const bd = document.getElementById('auBody'); if (bd) bd.innerHTML = auBody(); }, { passive: true }); })();
+/* ===== ট্যাবে সোয়াইপ: ডানে-বামে টানলে পাশের ট্যাব ===== */
+(function () {
+  const TABS = ['/', '/community', '/cat', '/lib', '/me'];
+  let sx = 0, sy = 0, st = 0, ok = false;
+  let sc = null;
+  const hScroll = (el) => { for (; el && el !== document.body; el = el.parentElement) { if (el.scrollWidth > el.clientWidth + 6) { const o = getComputedStyle(el).overflowX; if (o === 'auto' || o === 'scroll') return el; } } return null; };
+  document.addEventListener('touchstart', (e) => {
+    ok = false; if (e.touches.length !== 1) return;
+    const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now();
+    if (document.body.classList.contains('sub') || document.body.classList.contains('reading')) return;
+    const sw = document.getElementById('sheetWrap'); if (sw && !sw.hidden) return;
+    const tg = e.target; if (!tg || !tg.closest || tg.closest('input,textarea,select,.pvrail,[contenteditable]') || hScroll(tg) && 0) return;
+    sc = hScroll(tg); ok = true;
+  }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (!ok) return; ok = false;
+    const t = e.changedTouches[0]; const dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx) * 0.6 || Date.now() - st > 700) return;
+    if (sc) { const edgeL = sc.scrollLeft <= 2, edgeR = sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 2; if (dx > 0 ? !edgeL : !edgeR) return; }
+    const p = (curPath || '/').split('?')[0].replace(/\/+$/, '') || '/';
+    const i = TABS.indexOf(p); if (i < 0) return;
+    const j = i + (dx < 0 ? 1 : -1); if (j < 0 || j >= TABS.length) return;
+    const el = document.getElementById('app') || appEl(); nav(TABS[j]);
+    if (el) { el.classList.remove('slL', 'slR'); void el.offsetWidth; el.classList.add(dx < 0 ? 'slL' : 'slR'); setTimeout(() => el.classList.remove('slL', 'slR'), 320); }
+  }, { passive: true });
+})();
+
 /* ===== আপনার জন্য সাজেশন: অন/অফ ও প্রথমবার জিজ্ঞাসা ===== */
 const fyOn = () => store.get('jp_fy', true) !== false;
 function fyAsk() {
@@ -4628,6 +4685,7 @@ const CAT_ART = {
   'অনুপ্রেরণামূলক': ['#f59f00', '#d6336c', () => '<circle cx="150" cy="70" r="26" fill="rgba(255,255,255,.5)"/><path ' + W + ' d="M30 150l70-80 40 45 40-60 90 95z"/>']
 };
 function catArt(name, i) {
+  try { const u = db && db.catImages && db.catImages[name]; if (u) return '<img class="cart" style="object-fit:cover" alt="" loading="lazy" src="' + esc(u) + '">'; } catch (e) { /* ignore */ }
   const a = CAT_ART[name] || [CAT_COLORS[i % CAT_COLORS.length], CAT_COLORS[(i + 5) % CAT_COLORS.length], () => '<path ' + W + ' d="M95 40h110v80H95z"/><path d="M150 40v80" stroke="rgba(0,0,0,.25)" stroke-width="4"/>'];
   const id = 'cg' + i;
   return '<svg class="cart" viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + a[0] + '"/><stop offset="1" stop-color="' + a[1] + '"/></linearGradient></defs><rect width="300" height="150" fill="url(#' + id + ')"/>' + a[2]() + '</svg>';
@@ -4730,6 +4788,24 @@ async function viewPrivacy() {
     sec('৯. নীতির পরিবর্তন', 'প্রয়োজনে এই নীতি হালনাগাদ করা হতে পারে। বড় কোনো পরিবর্তন হলে এই পাতাতেই জানানো হবে।') +
     sec('১০. যোগাযোগ', 'গোপনীয়তা নিয়ে কোনো প্রশ্ন বা অভিযোগ থাকলে মেনুর “যোগাযোগ করুন” থেকে হোয়াটসঅ্যাপে জানান।') + '</main>';
 }
+function viewMe() {
+  const a = getAcct(); const t = store.get('jp_time', {}); t[secsKey] = secs;
+  const days = []; for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); days.push({ d, s: t[dayKey(d)] || 0 }); }
+  const mx = Math.max(60, ...days.map((x) => x.s)); const weekTotal = days.reduce((q, x) => q + x.s, 0);
+  const th = curTheme(); const lay = getLayout();
+  let who;
+  if (a) who = '<div class="pcard me">' + avatarHtml(a) + '<div style="flex:1;min-width:0"><div class="nm">' + esc(a.name) + '</div><div class="em">পাঠক প্রোফাইল</div><div class="row2"><button class="chg" data-act="acct-open" data-v="edit">সম্পাদনা</button></div></div></div>';
+  else who = '<div class="pcard me"><div class="avatar">' + IC.user + '</div><div style="flex:1;min-width:0"><div class="nm">অতিথি পাঠক</div><div class="em">নাম ও ছবি দিয়ে প্রোফাইল বানান</div><div class="row2"><button class="chg pr" data-act="acct-open" data-v="new">প্রোফাইল তৈরি করুন</button></div></div></div>';
+  return headerPage('প্রোফাইল', false, '<button class="quizpill" data-act="go" data-href="/quiz" aria-label="কুইজ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.2a2.9 2.9 0 1 1 4.4 2.5c-.9.6-1.6 1.1-1.6 2.3M12 17.3h.01"/></svg>কুইজ</button>') + '<main class="page">' + who +
+    '<div class="pcard"><div class="tmrow"><div><small>আজকের পড়ার সময়</small><div class="tm" id="todayTime">' + fmtTime(secs) + '</div></div><button class="tmr wk7" data-act="go" data-href="/goals" aria-label="গত ৭ দিনের পড়া ও লক্ষ্য"><small>গত ৭ দিনে</small><b>' + fmtTime(weekTotal) + '</b><i class="wk7c">›</i></button></div>' +
+    '<div class="wk7h">রিডিং স্ট্রিক, লক্ষ্য ও গ্রাফ দেখতে “গত ৭ দিনে” চাপুন</div></div>' +
+    '<div class="grp">লেখক ও কমিউনিটি</div><div class="pcard" style="padding:4px 12px"><div class="sublbl">লেখক প্যানেল</div>' +
+    mrow('pen', 'রাইটার প্যানেল', 'নিজের গল্প লিখুন ও প্রকাশের জন্য পাঠান', '', 'data-act="go" data-href="/w"') + mrow('user', 'ফলো করা লেখক', bn(Object.keys(getFollow()).length) + ' জন', '', 'data-act="go" data-href="/following"') + mrow('user', 'ব্লক করা লেখক', 'আনব্লক করে আবার মেসেজ পাঠান', '', 'data-act="go" data-href="/blocked"') +
+    '<div class="sublbl">পোস্ট</div>' + mrow('chat', 'আমার পোস্টসমূহ', 'এডিট, ডিলিট ও মন্তব্যের উত্তর', '', 'data-act="go" data-href="/myposts"') + mrow('chat', 'আমার মন্তব্যসমূহ', 'নিজের মন্তব্য দেখুন ও মুছুন', '', 'data-act="go" data-href="/mycomments"') + '</div>' +
+    '<div class="grp">পড়া ও খোঁজা</div><div class="pcard" style="padding:4px 12px">' +
+    mrow('read', 'সব গল্পের তালিকা', '', '', 'data-act="go" data-href="/list/recent"') + mrow('bell', 'নোটিশ', '', '', 'data-act="go" data-href="/notices"') + '</div>' +
+    '<div class="grp">অ্যাকাউন্ট</div><div class="pcard" style="padding:4px 12px">' + (a ? mrow('pen', 'প্রোফাইল সম্পাদনা', '', '', 'data-act="acct-open" data-v="edit"') + mrow('user', 'লগ আউট', '', '', 'data-act="acct-logout"') + mrow('trash', 'অ্যাকাউন্ট মুছুন', '', '', 'data-act="acct-del"') : mrow('user', 'প্রোফাইল তৈরি করুন', 'নাম ও ছবি দিন', '', 'data-act="acct-open" data-v="new"')) + '</div></main>';
+}
 function viewProfile() {
   const a = getAcct(); const t = store.get('jp_time', {}); t[secsKey] = secs;
   const days = []; for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); days.push({ d, s: t[dayKey(d)] || 0 }); }
@@ -4747,14 +4823,8 @@ function viewProfile() {
   const layOpts = '<button class="opt2' + (lay === 'list' ? ' on' : '') + '" data-act="layout-set" data-v="list"><span class="bkv"><u></u><u></u></span><span>কার্ড ভিউ<small>বামে কভার, ডানে বিবরণ</small></span><i></i></button><button class="opt2' + (lay === 'grid' ? ' on' : '') + '" data-act="layout-set" data-v="grid"><span class="pv g"><u></u><u></u><u></u></span><span>গ্রিড ভিউ<small>উপরে কভার, নিচে নাম</small></span><i></i></button>';
   const cbk = getRS().chbar in CHB ? getRS().chbar : 'red';
   const chbOpts = '<div class="swatches" style="padding:6px 2px">' + Object.keys(CHB).map((k) => '<button class="swatch' + (cbk === k ? ' on' : '') + '" data-act="prof-chbar" data-v="' + k + '" aria-label="' + CHB[k][0] + '" style="background:' + CHB[k][1] + '">' + (cbk === k ? IC.check : '') + '</button>').join('') + '</div><div class="chbprev"><span style="background:' + CHB[cbk][1] + '">১</span> অধ্যায় ১ — নমুনা</div>';
-  return headerPage('প্রোফাইল ও মেনু', true, '<button class="quizpill" data-act="go" data-href="/quiz" aria-label="কুইজ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.2a2.9 2.9 0 1 1 4.4 2.5c-.9.6-1.6 1.1-1.6 2.3M12 17.3h.01"/></svg>কুইজ</button>') + '<main class="page">' + who +
-    '<div class="pcard"><div class="tmrow"><div><small>আজকের পড়ার সময়</small><div class="tm" id="todayTime">' + fmtTime(secs) + '</div></div><button class="tmr wk7" data-act="go" data-href="/goals" aria-label="গত ৭ দিনের পড়া ও লক্ষ্য"><small>গত ৭ দিনে</small><b>' + fmtTime(weekTotal) + '</b><i class="wk7c">›</i></button></div>' +
-    '<div class="wk7h">রিডিং স্ট্রিক, লক্ষ্য ও গ্রাফ দেখতে “গত ৭ দিনে” চাপুন</div></div>' +
-    '<div class="grp">লেখক ও কমিউনিটি</div><div class="pcard" style="padding:4px 12px"><div class="sublbl">লেখক প্যানেল</div>' +
-    mrow('pen', 'রাইটার প্যানেল', 'নিজের গল্প লিখুন ও প্রকাশের জন্য পাঠান', '', 'data-act="go" data-href="/w"') + mrow('user', 'ফলো করা লেখক', bn(Object.keys(getFollow()).length) + ' জন', '', 'data-act="go" data-href="/following"') + mrow('user', 'ব্লক করা লেখক', 'আনব্লক করে আবার মেসেজ পাঠান', '', 'data-act="go" data-href="/blocked"') +
-    '<div class="sublbl">পোস্ট</div>' + mrow('chat', 'আমার পোস্টসমূহ', 'এডিট, ডিলিট ও মন্তব্যের উত্তর', '', 'data-act="go" data-href="/myposts"') + mrow('chat', 'আমার মন্তব্যসমূহ', 'নিজের মন্তব্য দেখুন ও মুছুন', '', 'data-act="go" data-href="/mycomments"') + '</div>' +
-    '<div class="grp">পড়া ও খোঁজা</div><div class="pcard" style="padding:4px 12px">' +
-    mrow('read', 'সব গল্পের তালিকা', '', '', 'data-act="go" data-href="/list/recent"') + mrow('bell', 'নোটিশ', '', '', 'data-act="go" data-href="/notices"') + mrow('home', 'হোম স্ক্রিন শর্টকাট', 'বই পড়ার শর্টকাট ফোনের হোম স্ক্রিনে রাখুন', '', 'data-act="sc-sheet"') + '</div>' +
+  return headerPage('মেনু', true, '') + '<main class="page">' +
+    '<div class="grp">অ্যাপ</div><div class="pcard" style="padding:4px 12px">' + mrow('home', 'হোম স্ক্রিন শর্টকাট', 'বই পড়ার শর্টকাট ফোনের হোম স্ক্রিনে রাখুন', '', 'data-act="sc-sheet"') + mrow('share', 'অ্যাপ শেয়ার করুন', 'বন্ধুদের অ্যাপের লিংক পাঠান', '', 'data-act="app-share"') + '</div>' +
     '<div class="grp">ডিসপ্লে ও থিম</div><div class="pcard" style="padding:4px 12px">' +
     accRow('lang', 'info', 'ভাষা', lg === 'en' ? 'English' : 'বাংলা', langOpts) +
     accRow('theme', 'moon', 'অ্যাপ থিম ও মোড', curPal.name + ' · ' + (modeSel === 'system' ? 'সিস্টেম' : th === 'dark' ? 'ডার্ক' : 'লাইট'), themeOpts) +
@@ -4773,6 +4843,7 @@ function viewProfile() {
     '<div class="ver"><span>ভার্সন</span><span>' + bn('1.0') + '</span></div></div>' +
     '<div class="center" style="margin-top:14px;font-weight:600">আমাদের সাথে যুক্ত থাকুন</div><div class="social"><button class="icon-btn" style="background:#1fa855;color:#fff;width:48px;height:48px" data-act="wa" aria-label="হোয়াটসঅ্যাপ">' + IC.wa + '</button></div></main>';
 }
+
 const getGoal = () => store.get('jp_goal', 30); let goalSel = 30;
 function goalStats() {
   const t = store.get('jp_time', {}); t[secsKey] = secs; const ks = Object.keys(t).filter((k) => t[k] > 0);
@@ -4827,7 +4898,7 @@ document.addEventListener('click', (e) => {
     toast(bn(m) + ' মিনিট পরে শোনা বন্ধ হবে');
   }
 });
-function profRerender() { if (/^\/goals/.test(curPath)) { const y0 = window.scrollY; setView(viewGoals()); fillGoalBooks(); window.scrollTo(0, y0); return; } if (!/^\/profile/.test(curPath)) return; const y = window.scrollY; setView(viewProfile()); window.scrollTo(0, y); }
+function profRerender() { if (/^\/goals/.test(curPath)) { const y0 = window.scrollY; setView(viewGoals()); fillGoalBooks(); window.scrollTo(0, y0); return; } if (!/^\/(profile|me)/.test(curPath)) return; const y = window.scrollY; setView(/^\/me/.test(curPath) ? viewMe() : viewProfile()); window.scrollTo(0, y); }
 function toggleSaved(id) {
   const ids = getSaved(); const i = ids.indexOf(id);
   if (i >= 0) ids.splice(i, 1); else ids.push(id);
@@ -4934,6 +5005,7 @@ async function onClick(ev) {
       case 'prof-chbar': setRS('chbar', d.v); profRerender(); break;
       case 'layout-set': store.set('jp_layout', d.v); profOpen = null; profRerender(); break;
       case 'acct-open': if (!getAcct() && !FLG('reg')) { toast('নতুন নিবন্ধন এখন বন্ধ আছে'); break; } openSheet(acctSheet(d.v)); break;
+      case 'app-share': { const u = location.origin + location.pathname.replace(/[^\/]*$/, ''); const tx = APPN + ' — বাংলা গল্প ও উপন্যাসের অ্যাপ'; if (navigator.share) { navigator.share({ title: APPN, text: tx, url: u }).catch(() => {}); } else { try { navigator.clipboard.writeText(u); toast('লিংক কপি হয়েছে'); } catch (e) { toast(u); } } break; }
       case 'acct-logout': store.set('jp_sess', false); toast('লগ আউট হয়েছে'); profRerender(); break;
       case 'acct-del': showDialog({ title: 'অ্যাকাউন্ট মুছবেন?', text: 'এই ডিভাইস থেকে আপনার অ্যাকাউন্টের তথ্য মুছে যাবে।', no: 'না', yes: 'হ্যাঁ, মুছুন', onYes: () => { store.del('jp_acct'); store.del('jp_sess'); toast('অ্যাকাউন্ট মুছে ফেলা হয়েছে'); profRerender(); } }); break;
       case 'sh-del': confirmDel('সার্চ মুছবেন?', 'এই সার্চটি হিস্ট্রি থেকে মুছে যাবে।', () => { store.set('jp_sh', store.get('jp_sh', []).filter((x) => x !== d.q)); runSearch(''); }); break;
