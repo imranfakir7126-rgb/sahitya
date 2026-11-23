@@ -1,5 +1,5 @@
 /* যাত্রাপথ — অফলাইনে অ্যাপ খোলার জন্য সার্ভিস ওয়ার্কার (পেজ ও ছবি ফোনে জমিয়ে রাখে) */
-var CACHE = 'jp-shell-v1', SDK = 'jp-sdk-v1';
+var CACHE = 'jp-shell-v2', SDK = 'jp-sdk-v1';
 self.addEventListener('install', function (e) { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (ks) { return Promise.all(ks.filter(function (k) { return k !== CACHE && k !== SDK; }).map(function (k) { return caches.delete(k); })); }).then(function () { return self.clients.claim(); }));
