@@ -4307,7 +4307,7 @@ function featGo(rail, idx) {
   const rr = rail.getBoundingClientRect(); const cr = cs[idx].getBoundingClientRect();
   const max = rail.scrollWidth - rail.clientWidth; const to = Math.max(0, Math.min(max, rail.scrollLeft + (cr.left + cr.width / 2) - (rr.left + rr.width / 2)));
   const from = rail.scrollLeft; const dist = to - from; if (Math.abs(dist) < 1) return;
-  const id = ++featAnim; const dur = Math.min(520, 380 + Math.abs(dist) * 0.05); const t0 = performance.now();
+  const id = ++featAnim; const dur = Math.min(480, 360 + Math.abs(dist) * 0.05); const t0 = performance.now();
   rail.style.scrollSnapType = 'none'; rail.style.scrollBehavior = 'auto';
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   (function fr(now) {
@@ -4322,15 +4322,10 @@ function featCur(rail) {
   return bi;
 }
 function startAuto(rail) {
-  clearAuto(); if (store.get('jp_noanim', false) === true) return;
+  clearAuto();
   if (!rail || rail.children.length < 2) return;
   let tk = false; rail.addEventListener('scroll', () => { if (tk) return; tk = true; requestAnimationFrame(() => { tk = false; featFx(rail); }); }, { passive: true });
   featFx(rail);
-  timerAuto = setInterval(() => {
-    if (!document.body.contains(rail) || document.hidden) return;
-    if (Date.now() < pauseAutoUntil) return;
-    const ci = featCur(rail); featGo(rail, ci >= rail.children.length - 1 ? 0 : ci + 1);
-  }, 3200);
   if (!(rail.nextElementSibling && rail.nextElementSibling.classList.contains('fdots'))) {
     const dots = document.createElement('div'); dots.className = 'fdots';
     dots.innerHTML = new Array(rail.children.length).fill('<i></i>').join(''); rail.after(dots);
@@ -4338,6 +4333,17 @@ function startAuto(rail) {
     rail.addEventListener('scroll', upd, { passive: true }); upd();
   }
 }
+
+/* ফিচার্ড স্লাইডার: প্রতি ২ সেকেন্ডে নিজে থেকে এগোয় (আলাদা টাইমার, রেন্ডারের ওপর নির্ভর করে না) */
+let featTouchUntil = 0;
+['touchstart', 'pointerdown', 'wheel'].forEach((ev) => document.addEventListener(ev, (e) => { try { if (e.target && e.target.closest && e.target.closest('#featuredRail')) featTouchUntil = Date.now() + 4000; } catch (x) { /* ignore */ } }, { passive: true, capture: true }));
+setInterval(() => {
+  try {
+    const r = document.getElementById('featuredRail'); if (!r || document.hidden || r.children.length < 2 || !r.offsetParent) return;
+    if (Date.now() < featTouchUntil || Date.now() < pauseAutoUntil) return;
+    const ci = featCur(r); featGo(r, ci >= r.children.length - 1 ? 0 : ci + 1);
+  } catch (e) { /* ignore */ }
+}, 2000);
 
 /* ---------- সব দেখুন ---------- */
 const STATUS_CHIPS = ['সব', 'চলমান', 'সমাপ্ত'];
