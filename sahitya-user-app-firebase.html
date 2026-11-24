@@ -1487,6 +1487,25 @@ html body .nbtoc .chlist .ch .chdl.done{color:#d3202a!important}
 .nbrd .nbread{flex:0 0 62%!important;white-space:nowrap}
 .nbrd .nbread span{white-space:nowrap;font-size:14.5px;gap:6px}
 .nbrd .nbread svg{width:18px!important;height:18px!important;flex:0 0 18px}
+
+/* ===== p51: ছোট অধ্যায় সারি — রেফারেন্সের মতো ৯টা এক স্ক্রিনে ===== */
+body.bookpg .hdr{margin:8px 12px 0!important}
+body.bookpg .hdr .hdr-row{min-height:46px!important;height:46px!important}
+body.bookpg .hdr .hdr-title{font-size:20px!important}
+.nbhero{padding:12px 14px 6px!important}
+.nbhero .cover{flex-basis:34%!important;width:34%!important}
+.nbhero h1{font-size:25px!important}
+.nbhero .di{gap:6px!important}
+.nbhero .pr .pill,.nbhero .pr .catp{padding:6px 16px!important;font-size:14px!important}
+html body .nbpills{margin:8px 12px 0!important}
+html body .nbpills .nbp{height:34px!important;font-size:12.5px!important}
+.nbtoc .chhd{margin:10px 0 7px!important}.nbtoc .chh{font-size:18px!important}
+html body .nbtoc .chlist .ch{min-height:0!important;height:36px!important;padding:3px 12px 3px 5px!important;margin:0 0 6px!important}
+html body .nbtoc .chlist .ch .chn,html body .nbtoc .chlist .ch.seen .chn{flex:0 0 26px!important;width:26px!important;height:26px!important;font-size:13px!important}
+html body .nbtoc .chlist .ch .chm{gap:10px!important}
+html body .nbtoc .chlist .ch .cht b,html body .nbtoc .chlist .ch .cht small{font-size:14px!important}
+html body .nbtoc .chlist .ch .chdl{width:28px!important;flex-basis:28px!important;height:28px!important}
+html body .nbtoc .chlist .ch .chdl svg{width:17px!important;height:17px!important}
 </style>
 </head>
 <body>
@@ -2796,6 +2815,7 @@ function flagsApply() {
 }
 const curTheme = () => { if (FLG('dark')) return 'dark'; const m = store.get('jp_theme', 'dark'); if (m === 'light') return 'light'; if (m === 'system') { try { return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch (e) { return 'dark'; } } return 'dark'; };
 const CHB = { red: ['লাল', '#b71c1c'], green: ['সবুজ', '#2f5a55'], blue: ['নীল', '#2b5797'], purple: ['বেগুনি', '#9e4a50'], orange: ['কমলা', '#b8651b'], pink: ['গোলাপি', '#a33a6d'] };
+try { if (!store.get('jp_anim_m2', false)) { store.set('jp_noanim', false); store.set('jp_anim_m2', true); } } catch (e) { /* ignore */ }
 function applyAnim() { document.documentElement.classList.toggle('noanim', store.get('jp_noanim', false) === true); }
 function applyRS() {
   const r = getRS(); const k = r.bg === 'auto' ? (curTheme() === 'dark' ? 'dark' : 'white') : r.bg;
@@ -4689,7 +4709,6 @@ async function viewReader(bookId, n) {
     '<div class="mid"><small>' + esc(rd.author) + '</small><b>' + esc(c.bookTitle) + '</b></div>' +
     '<button class="icon-btn" data-act="drawer-open" aria-label="অধ্যায়সমূহ" data-i="grid"></button>' +
     '<button class="icon-btn abtn" data-act="rs-open" aria-label="সেটিং"><span class="ta">A</span><span class="tg">' + IC.gear + '</span></button></div>' +
-    '<div class="rtabs" role="tablist"><button id="tabRead" role="tab" aria-selected="true" class="on" data-act="rmode" data-v="read">' + IC.read + 'পড়ুন</button><button id="tabListen" role="tab" aria-selected="false" data-act="rmode" data-v="listen">' + IC.headphone + 'শুনুন</button></div>' +
     '</div>' +
     '<article class="reader"><div class="rmark" id="rmark" aria-hidden="true"></div><h2>' + esc(c.title) + '</h2><div class="txt" id="rtxt">' + paras.map((p, i) => '<p data-p="' + i + '">' + esc(p) + '</p>').join('') + '</div>' + (c.next ? '' : '<div class="rdpost"><button class="rdpostbtn" data-act="book-post" data-id="' + esc(bookId) + '">' + IC.pen + ' এই বইটা সম্পর্কে কিছু লিখে পোস্ট করুন</button></div>') + '</article>' +
     '<section class="lplayer" id="lplayer"><div class="lstage"><div class="lframe"><div class="lcover">' + (rd.cover ? '<img src="' + esc(rd.cover) + '" alt="' + esc(c.bookTitle) + '">' : '') + '</div></div></div>' +
