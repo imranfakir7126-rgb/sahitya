@@ -1576,6 +1576,49 @@ html body .nbhero,html body main.nbpage{overflow:visible!important}
 html body .nbhero .nbdesc summary{display:block!important;white-space:normal!important}
 html body .nbhero .nbdesc .bd1{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:3!important;white-space:normal!important;overflow:hidden;text-overflow:clip!important;font-size:13.5px;line-height:1.5}
 html body .nbhero .nbdesc[open] p{font-size:13.5px;line-height:1.55;margin:0;color:var(--nbs)}
+
+/* ===== p55: হোম ক্যাটাগরি কার্ড — রেফারেন্স সাইজ (প্রচ্ছদ বড়, প্রায় বর্গাকার) ===== */
+html body .rail.rk{padding-left:0!important;padding-right:0!important;gap:10px!important;scroll-padding-left:0!important}
+html body .rail.rk .rkc{flex:0 0 calc((100% - 20px)/3)!important;border-radius:18px!important}
+html body .rkv{aspect-ratio:1/1!important}
+html body .rkn{top:7px;left:7px;font-size:11.5px;padding:3px 8px}
+html body .rkn svg{width:13px;height:13px}
+html body .rkt{font-size:13px!important;padding:7px 9px 0!important}
+html body .rka{font-size:11px!important;padding:2px 9px 9px!important}
+
+/* ===== p56: হোম বইয়ের কার্ড (Jamai-স্টাইল) + সব দেখুন গ্রিড ===== */
+html body .rail.rk{gap:8px!important}
+html body .rail.rk .rkc{flex:0 0 calc((100% - 24px)/3.5)!important;background:var(--card)!important;border:0!important;border-radius:18px!important;padding:8px 6px 10px!important;box-shadow:0 8px 20px -12px rgba(0,0,0,.35);text-align:center;align-items:stretch}
+html body .rkv{width:100%;aspect-ratio:3/4.2!important;border-radius:3px!important}
+html body .rkt{font-size:12.5px!important;font-weight:800;white-space:normal!important;line-height:1.3;min-height:2.6em;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding:8px 2px 0!important;text-align:center}
+html body .rka{white-space:normal!important;font-size:10.5px!important;text-align:center;padding:4px 2px 0!important;line-height:1.35}
+html body .rka b{display:block;font-weight:600;color:var(--text);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body .rkl{display:flex;justify-content:center;align-items:center;gap:4px;font-size:11.5px;color:var(--muted);padding:6px 0 0;margin-top:auto}
+html body .rkl svg{width:14px;height:14px}
+.books.bgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 12px}
+.bgc{cursor:pointer;min-width:0;-webkit-tap-highlight-color:transparent}
+.bgv{aspect-ratio:1/1.17;border-radius:16px;overflow:hidden;background:var(--card2);box-shadow:0 8px 20px -12px rgba(0,0,0,.45)}
+.bgv img{width:100%;height:100%;object-fit:cover;display:block}
+.bgr{display:flex;align-items:flex-start;gap:6px;padding:8px 2px 0}
+.bgt{flex:1;min-width:0}
+.bgt b{display:block;font-size:15px;font-weight:800;line-height:1.3;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bgt span{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bgb{flex:0 0 28px;height:28px;border:0;background:none;color:var(--text);display:grid;place-items:center;padding:0;margin-top:1px}
+.bgb svg{width:22px;height:22px}.bgb.on svg{fill:currentColor}
+
+/* ===== p57: স্মুথ ইন ইফেক্ট (অ্যাপ খোলা, পাতা বদল, বইয়ে ঢোকা, স্ক্রলে ভেসে ওঠা) ===== */
+@keyframes pgin2{from{opacity:0;transform:translateY(18px) scale(.985);filter:blur(7px)}55%{filter:blur(0)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes bookin{from{opacity:0;transform:scale(.94) translateY(10px);filter:blur(10px)}60%{filter:blur(0)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes coverin{from{opacity:0;transform:scale(.86) translateY(14px)}to{opacity:1;transform:none}}
+@keyframes appopen{from{opacity:0}to{opacity:1}}
+html body #app>*{animation:pgin2 .62s cubic-bezier(.22,.61,.36,1) backwards!important}
+html body.bookpg #app>*{animation:bookin .72s cubic-bezier(.22,.61,.36,1) backwards!important}
+html body.bookpg .nbhero .cover{animation:coverin .9s cubic-bezier(.22,.61,.36,1) .12s backwards}
+html body{animation:appopen .8s ease-out backwards}
+html body .rv{opacity:0;transform:translateY(22px);filter:blur(4px);transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1),filter .7s ease}
+html body .rv.in{opacity:1;transform:none;filter:none}
+html.noanim body .rv{opacity:1!important;transform:none!important;filter:none!important}
+@media (prefers-reduced-motion:reduce){html body .rv{opacity:1;transform:none;filter:none;transition:none}html body #app>*{animation:none!important}}
 </style>
 </head>
 <body>
@@ -4274,6 +4317,7 @@ async function route() {
   }
 }
 function afterRender(page, seg, params) {
+  try { initReveal(); } catch (e) { /* ignore */ }
   try { flagsApply(); flagsRefresh(); } catch (e) { /* ignore */ }
   if (page === 'home') { startAuto($('#featuredRail')); featTint(); updateBell(); setTimeout(noticePopup, 1800); if (!window.__epChk) { window.__epChk = 1; newEpCheck(); } badgeCheck(); }
   if (page === 'search') {
@@ -4449,8 +4493,17 @@ async function viewHome() {
   return h + shelves.join('') + '</main>';
 }
 function rcard(b) {
-  return '<div class="rkc" data-act="book" data-id="' + esc(b.id) + '"><div class="rkv"><img src="' + esc(b.cover) + '" alt="' + esc(b.title) + '" loading="lazy" decoding="async"><span class="rkn">' + ic('eye') + fmtN(b.reads || 0) + '</span></div><div class="rkt">' + esc(b.title) + '</div><div class="rka">লেখক: ' + esc(b.author) + '</div></div>';
+  return '<div class="rkc" data-act="book" data-id="' + esc(b.id) + '"><div class="rkv"><img src="' + esc(b.cover) + '" alt="' + esc(b.title) + '" loading="lazy" decoding="async"></div><div class="rkt">' + esc(b.title) + '</div><div class="rka">লেখক:<b>' + esc(b.author) + '</b></div><div class="rkl">' + (IC.heart || '') + fmtN(b.likes || 0) + '</div></div>';
 }
+function bgcard(b) {
+  const on = getSaved().indexOf(b.id) >= 0;
+  return '<div class="bgc" data-act="book" data-id="' + esc(b.id) + '"><div class="bgv"><img src="' + esc(b.cover) + '" alt="' + esc(b.title) + '" loading="lazy" decoding="async"></div><div class="bgr"><div class="bgt"><b>' + esc(b.title) + '</b><span>' + esc(b.author) + VER + '</span></div><button class="bgb' + (on ? ' on' : '') + '" data-act="fav-q" data-id="' + esc(b.id) + '" aria-label="বুকমার্ক">' + (IC.save || '') + '</button></div></div>';
+}
+function gridBlock(list, emptyMsg) {
+  if (!list.length) return '<div class="empty">' + esc(emptyMsg) + '</div>';
+  return '<div class="books bgrid">' + list.map(bgcard).join('') + '</div>';
+}
+
 function featFx(rail) { /* স্মুথ স্লাইডের জন্য কোনো স্কেল/ঝাঁকুনি নেই */ }
 let featAnim = 0;
 function featGo(rail, idx) {
@@ -4495,6 +4548,20 @@ function fabStyle() { try { const p = store.get('jp_fab', null); if (!p || !(p.l
   document.addEventListener('pointerup', end, true); document.addEventListener('pointercancel', end, true);
   document.addEventListener('click', (e) => { if (moved && e.target.closest && e.target.closest('.rfab')) { e.stopPropagation(); e.preventDefault(); } moved = false; }, true);
 })();
+let revIO = null;
+function initReveal() {
+  if (!('IntersectionObserver' in window)) return;
+  if (document.documentElement.classList.contains('noanim') || (window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches)) return;
+  const app = document.getElementById('app'); if (!app) return;
+  if (revIO) revIO.disconnect();
+  const show = (el) => { el.classList.add('in'); setTimeout(() => { el.classList.remove('rv', 'in'); el.style.transitionDelay = ''; }, 1500); };
+  revIO = new IntersectionObserver((es) => { es.forEach((e) => { if (e.isIntersecting) { revIO.unobserve(e.target); show(e.target); } }); }, { threshold: 0.06, rootMargin: '0px 0px -3% 0px' });
+  let n = 0;
+  app.querySelectorAll('.sec-title,.rail:not(.feat),.books .bkc,.bgc,.chlist .ch,.catgrid>*,.srbk').forEach((el) => {
+    el.classList.add('rv'); el.style.transitionDelay = ((n++ % 6) * 60) + 'ms'; revIO.observe(el);
+  });
+  setTimeout(() => { app.querySelectorAll('.rv:not(.in)').forEach((el) => { const r = el.getBoundingClientRect(); if (r.top < window.innerHeight && r.bottom > 0) { revIO && revIO.unobserve(el); show(el); } }); }, 2200);
+}
 let featTouchUntil = 0;
 ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => document.addEventListener(ev, (e) => { try { if (e.target && e.target.closest && e.target.closest('#featuredRail')) featTouchUntil = Date.now() + 4000; } catch (x) { /* ignore */ } }, { passive: true, capture: true }));
 setInterval(() => {
@@ -4513,7 +4580,7 @@ async function viewList(key, status) {
   const data = await api('/list?key=' + enc(key));
   const books = st === 'সব' ? data.books : data.books.filter((b) => b.status === st);
   return headerPage(SEC_TITLES[key] || data.title || 'তালিকা', true, fltBtn('/list/' + enc(key), st)) + '<main class="page">' +
-    booksBlock(books, 'এই তালিকায় কোনো বই পাওয়া যায়নি।') + '</main>';
+    gridBlock(books, 'এই তালিকায় কোনো বই পাওয়া যায়নি।') + '</main>';
 }
 
 /* ---------- ক্যাটাগরি ---------- */
@@ -4905,10 +4972,15 @@ function buildChunks(paras) {
   if (buf.trim()) out.push({ pi: pi0, t: buf });
   return out;
 }
+const okBn = (v) => /^bn/i.test(v.lang || '') && !/bnd/i.test((v.voiceURI || '') + ' ' + (v.name || ''));
 function pickVoice() {
   if (!ttsOK()) return null; const vs = SS.getVoices() || []; const want = getRS().voice;
-  const bn2 = vs.filter((v) => /^bn/i.test(v.lang)); const sc = (v) => { const n = (v.name || '') + ' ' + (v.voiceURI || ''); return (/female|woman|nabanita|tanishaa|ananya/i.test(n) ? 3 : 0) - (/(^|[^a-z])male|pradeep|bashkar|\bbnm\b/i.test(n) && !/female/i.test(n) ? 3 : 0); };
-  return vs.find((v) => v.voiceURI === want) || bn2.slice().sort((a, b) => sc(b) - sc(a))[0] || null;
+  const bn2 = vs.filter(okBn); const sc = (v) => { const n = (v.name || '') + ' ' + (v.voiceURI || ''); return (/^bn[-_]in/i.test(v.lang) ? 4 : 0) + (/bnc/i.test(n) ? 2 : 0) + (/network/i.test(n) ? 1 : 0) + (/female/i.test(n) ? 3 : 0) - (/language/i.test(n) && !/x-/i.test(n) ? 1 : 0); };
+  return bn2.find((v) => v.voiceURI === want) || bn2.slice().sort((x, y) => sc(y) - sc(x))[0] || null;
+}
+function vlabel(v, i) {
+  const n = (v.voiceURI || '') + ' ' + (v.name || ''); const reg = /^bn[-_]bd/i.test(v.lang) ? 'বাংলাদেশ' : 'ভারত'; const m = n.match(/x-([a-z]+)/i);
+  return 'বাংলা (' + reg + ') — ভয়েস ' + bn(i + 1) + (/network/i.test(n) ? ' · অনলাইন' : /local/i.test(n) ? ' · ডিভাইসে' : ' · ডিফল্ট') + (m ? ' · ' + m[1] : '');
 }
 function markPara(pi) {
   if (pi != null && rd) rd.lastPi = pi;
@@ -5098,9 +5170,9 @@ function rsHtml() {
       (r.auto ? '<input type="range" id="rsAs" min="1" max="8" value="' + r.aspeed + '" style="margin-top:12px" aria-label="স্ক্রলের গতি">' : '') + '</div>' +
       '<div class="scard srow"><span>স্ক্রিন অন রাখুন</span><button class="sw' + (r.wake ? ' on' : '') + '" data-act="rs-wake" aria-label="স্ক্রিন অন রাখুন"></button></div>';
   } else if (rsTab === 'voice') {
-    const vs = ttsOK() ? (SS.getVoices() || []) : []; const pv = pickVoice();
+    const vs = ttsOK() ? (SS.getVoices() || []).filter(okBn) : []; const pv = pickVoice(); const shim = !window.speechSynthesis;
     h += '<div class="scard"><span class="lbl">ভয়েস আর্টিস্ট নির্বাচন করুন</span>' +
-      (ttsOK() ? (vs.length ? '<select id="rsVoice">' + vs.slice().sort((a, b) => (/^bn/i.test(b.lang) ? 1 : 0) - (/^bn/i.test(a.lang) ? 1 : 0)).map((v) => '<option value="' + esc(v.voiceURI) + '"' + (pv && pv.voiceURI === v.voiceURI ? ' selected' : '') + '>' + esc(v.name) + ' (' + esc(v.lang) + ')</option>').join('') + '</select>' : '<div class="sub" style="margin:0">কোনো ভয়েস পাওয়া যায়নি। ফোনের টেক্সট-টু-স্পিচ সেটিংসে বাংলা ভয়েস ইনস্টল করুন।</div>') : '<div class="sub" style="margin:0">এই ডিভাইসে "শুনুন" সুবিধা নেই।</div>') + '</div>' +
+      (ttsOK() ? (shim ? '<div class="sub" style="margin:0">অনলাইন বাংলা (মহিলা) ভয়েস ব্যবহার হচ্ছে।</div>' : vs.length ? '<select id="rsVoice">' + vs.map((v, i) => '<option value="' + esc(v.voiceURI) + '"' + (pv && pv.voiceURI === v.voiceURI ? ' selected' : '') + '>' + esc(vlabel(v, i)) + '</option>').join('') + '</select>' : '<div class="sub" style="margin:0">কোনো বাংলা ভয়েস পাওয়া যায়নি। ফোনের টেক্সট-টু-স্পিচ সেটিংসে বাংলা ভয়েস ইনস্টল করুন।</div>') : '<div class="sub" style="margin:0">এই ডিভাইসে "শুনুন" সুবিধা নেই।</div>') + '</div>' +
       '<div class="scard"><span class="lbl">পড়ার গতি</span><input type="range" id="rsRate" min="1" max="10" value="' + r.rate + '"><div class="rssl"><span>ধীর</span><span>স্বাভাবিক</span><span>দ্রুত</span></div></div>' +
       '<div class="scard"><span class="lbl">ভয়েস টোন</span><div class="fonts">' + [['normal', 'স্বাভাবিক'], ['calm', 'শান্ত'], ['expr', 'ভাবপ্রবণ']].map((t) => '<button class="' + ((r.tone || 'normal') === t[0] ? 'on' : '') + '" data-act="rs-tone" data-v="' + t[0] + '">' + t[1] + '</button>').join('') + '</div></div>' +
       '<button class="bigbtn" data-act="rs-listen">' + (tts.on ? 'শোনা বন্ধ করুন' : 'এখান থেকে শুনুন') + '</button>';
