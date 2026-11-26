@@ -1662,6 +1662,44 @@ html body .offscr .oflink{margin-top:14px;background:none;border:0;color:#555;fo
 .wauth .wseg{margin:6px 0 22px}
 .wauth #wBtn.wbtn{border-radius:18px;height:56px}
 html body .wauth .wfl label{color:var(--text)}
+/* p62: লেখক নিবন্ধন — ৭ ধাপ */
+.wz{padding:4px 2px 24px}
+.wz .wzbar{display:flex;align-items:center;gap:12px;margin:6px 0 14px}
+.wz .wzb{width:44px;height:44px;border-radius:14px;border:0;background:var(--card);color:var(--text);display:grid;place-items:center;flex:none}
+.wz .wzb svg{width:24px;height:24px}
+.wz .wzpg{flex:1;height:5px;border-radius:5px;background:var(--line);overflow:hidden}
+.wz .wzpg i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--g1,var(--wa)),var(--g2,var(--wa)));transition:width .35s ease}
+.wz #wzNo{font-size:13.5px;color:var(--muted);white-space:nowrap}
+.wz .wzbrand{display:flex;align-items:center;justify-content:center;gap:8px;margin:4px 0 18px;color:var(--text);font-weight:800;font-size:18px}
+.wz .wzbrand svg{width:26px;height:26px;color:var(--g2,var(--wa))}
+.wz .wzst{animation:wzin .35s ease both}
+@keyframes wzin{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+.wz h2{font-size:25px;line-height:1.3;margin:6px 0 8px;font-weight:800;color:var(--text)}
+.wz h3{font-size:17px;margin:20px 0 12px;font-weight:700;color:var(--text)}
+.wz .wzs2{margin:0 0 20px;color:var(--muted);font-size:14.5px}
+.wz .wzh{margin:8px 4px 0;color:var(--muted);font-size:13px}.wz .wzh.c{text-align:center;margin-top:14px}
+.wz .wzrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wz .wzin{position:relative;display:flex;align-items:center;height:60px;border-radius:18px;background:var(--card);border:1.5px solid var(--line);margin:0 0 14px;padding:0 10px 0 14px;gap:10px}
+.wz .wzin:focus-within{border-color:var(--g2,var(--wa));box-shadow:0 0 0 1px var(--g2,var(--wa))}
+.wz .wzi{width:24px;height:24px;flex:none;color:var(--muted);display:grid;place-items:center}.wz .wzi svg{width:24px;height:24px}
+.wz .wzin input{flex:1;min-width:0;border:0!important;background:none!important;box-shadow:none!important;height:100%;padding:0!important;font-size:16.5px;font-weight:600;color:var(--text);outline:0}
+.wz .wzx{width:32px;height:32px;border-radius:50%;border:0;background:var(--card2);color:var(--muted);display:grid;place-items:center;flex:none}.wz .wzx svg{width:16px;height:16px}
+.wz .wzrow .wzin{padding-right:8px}
+.wz .wzgs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.wz .wzg{position:relative;border:1.5px solid var(--line);background:var(--card);border-radius:20px;padding:18px 6px 14px;color:var(--text);display:flex;flex-direction:column;align-items:center;gap:8px;font:inherit}
+.wz .wzg>svg{width:38px;height:38px;color:var(--muted)}.wz .wzg b{font-weight:700;font-size:15px}
+.wz .wzg i{display:none;position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--g2,var(--wa));color:#fff;place-items:center}.wz .wzg i svg{width:14px;height:14px}
+.wz .wzg.on{border-color:var(--g2,var(--wa));background:var(--pur-soft,var(--card2))}.wz .wzg.on>svg{color:var(--g2,var(--wa))}.wz .wzg.on i{display:grid}
+.wz .wzbd{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:10px}.wz .wzbd label{font-size:14px;color:var(--muted);display:block}.wz .wzbd .wzin{margin-top:8px;padding:0 8px;gap:6px}.wz .wzbd .wzi{width:18px}.wz .wzbd .wzi svg{width:18px;height:18px}.wz .wzbd input{font-size:17px}
+.wz .wzph{display:block;margin:6px auto 18px;border:0;background:none;padding:0}
+.wz #wavBox{width:190px;height:190px;border-radius:50%;border:2px dashed var(--g2,var(--wa));background:var(--card);display:grid;place-items:center;overflow:hidden;position:relative}
+.wz #wavBox img{width:100%;height:100%;object-fit:cover}
+.wz .wzpi{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--g2,var(--wa))}.wz .wzpi svg{width:46px;height:46px}.wz .wzpi b{font-size:15px}
+.wz .wzgal{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto 20px;padding:12px 20px;border-radius:999px;border:1.5px solid var(--line);background:none;color:var(--text);font:inherit;font-weight:700}.wz .wzgal svg{width:22px;height:22px}
+.wz .wzn{margin-top:10px;border-radius:18px;height:56px;width:100%}
+.wz .wzlg{text-align:center;margin-top:16px;color:var(--muted)}
+.wz .werr{min-height:20px;margin:6px 2px 0;color:#e5484d;font-size:14px;text-align:center}
+html body .wz .wzn,html body .wz #wBtn.wbtn{background:linear-gradient(135deg,var(--g1),var(--g2))!important;color:#fff!important}
 </style>
 </head>
 <body>
@@ -2978,7 +3016,7 @@ function applyRS() {
   const r = getRS(); const k = r.bg === 'auto' ? (curTheme() === 'dark' ? 'dark' : 'white') : r.bg;
   const c = RBG[k] || RBG.dark; const s = document.documentElement.style;
   s.setProperty('--rbg', c[0]); const CC = { red: ['#c62828', '#ff6b6b'], blue: ['#1565c0', '#6cb4ff'], yellow: ['#b7791f', '#ffd54f'], green: ['#2e7d32', '#6fdc8c'], black: ['#000000', '#000000'] };
-  s.setProperty('--chbar', (CHB[r.chbar] || CHB.red)[1]);
+  s.setProperty('--chbar', CHB.red[1]);
   s.setProperty('--rtext', c[1]); s.setProperty('--fs', r.fs + 'px'); s.setProperty('--pg', r.gap + 'px'); s.setProperty('--rfont', (FONTS[r.font] || FONTS.sans)[0]); applyAnim();
 }
 /* ===== থিম প্যালেট (রঙের সেট) — প্রতিটির লাইট ও ডার্ক দুই রূপ ===== */
@@ -3063,7 +3101,7 @@ let timeTimer = null;
 function startTimeTracker() {
   if (timeTimer) { clearInterval(timeTimer); timeTimer = null; } else { document.addEventListener('visibilitychange', persistTime); window.addEventListener('pagehide', persistTime); }
   timeTimer = setInterval(() => {
-    if (document.hidden || !document.body.classList.contains('reading')) return; // শুধু রিডার খোলা থাকলে গোনা হয়
+    if (document.hidden) return; // অ্যাপ খোলা থাকলেই সময় গোনা হয়
     if (todayKey() !== secsKey) { persistTime(); secsKey = todayKey(); secs = 0; }
     secs++; if (rd && !tts.hold) { addCT(rd.id, rd.n); refreshRT(); } if (secs % 5 === 0) persistTime(); refreshTime();
   }, 1000);
@@ -3073,6 +3111,7 @@ function startTimeTracker() {
 const CLK_SND = 'data:audio/mpeg;base64,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AANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zYsRvAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/82DEcAAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/82LEbwAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NixG8AAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zYsRvAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/82DEcAAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=';
 let clkCtx = null, clkBuf = null, clkAud = null;
 function clkPlay() {
+  if (store.get('jp_snd', true) === false) return;
   try {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (AC) {
@@ -3594,13 +3633,65 @@ function wLogin() {
     '<div style="text-align:center;margin-top:4px">নতুন লেখক? <button class="wlink" data-w="go" data-href="/w/signup">অ্যাকাউন্ট খুলুন</button></div></div>', null, true);
 }
 let wPhoto = '';
+const WZ_N = 6;
 function wSignup() {
   wPhoto = '';
-  return wPage('লেখক অ্যাকাউন্ট', '<div class="wauth"><div class="wl-art"><p>“আপনার গল্পে<br>জীবন পাক নতুন<br>ভুবন...”</p></div><div class="wseg"><button class="" data-w="go" data-href="/w">লগইন</button><button class="on" data-w="go" data-href="/w/signup">নিবন্ধন</button></div>' + wAvatar('', 'ল') + wFld('আপনার নাম', 'ws-n', '', { ac: 'name' }) + wFld('ইউজারনেম * (a-z, 0-9, _ .)', 'ws-un', '', { ac: 'username' }) + wFld('ইমেইল', 'ws-e', '', { t: 'email', ac: 'username', im: 'email' }) +
-    wFld('মোবাইল নাম্বার', 'ws-m', '', { t: 'tel', ac: 'tel', im: 'numeric' }) + wFld('হোয়াটসঅ্যাপ নাম্বার * (যেটা চালু আছে)', 'ws-wa', '', { t: 'tel', ac: 'tel', im: 'numeric' }) + wSel('লিঙ্গ *', 'ws-gn', [['m', 'পুরুষ'], ['f', 'নারী'], ['o', 'অন্যান্য / বলতে চাই না']], '', 'নির্বাচন করুন') + wSel('আপনার দেশ', 'ws-co', W_CO, '', 'দেশ সিলেক্ট করুন') + wFld('ফেসবুক আইডি/পেজ অথবা টিকটক লিংক *', 'ws-sl', '', { t: 'url', ac: 'url' }) + '<p class="wnote" style="margin:-4px 2px 10px;font-size:12px;opacity:.75">একজন একটাই অ্যাকাউন্ট খুলতে পারবেন — তাই আপনার আসল প্রোফাইল বা পেজের লিংক দিন (যেমন https://facebook.com/...)।</p>' + wSel('কোন ভাষায় লিখতে চান?', 'ws-lg', W_LG, 'bn', 'ভাষা সিলেক্ট করুন') + wPw('ws-p', 'পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)', 'new-password') +
-    '<div class="werr" id="wErr" role="alert"></div><button class="wbtn" data-w="signup" id="wBtn">অ্যাকাউন্ট খুলুন</button>' +
-    '<div style="text-align:center;margin-top:8px">আগে থেকেই অ্যাকাউন্ট আছে? <button class="wlink" data-w="go" data-href="/w">লগইন</button></div></div>', null, true);
+  const I = {
+    user: P('<circle cx="12" cy="8" r="4"/><path d="M4 20c1-4 4-6 8-6s7 2 8 6"/>'), at: P('<circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/>'),
+    lock: P('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), mail: P('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
+    male: P('<circle cx="10" cy="14" r="5"/><path d="M14 10l6-6M15 4h5v5"/>'), female: P('<circle cx="12" cy="9" r="5"/><path d="M12 14v8M9 18h6"/>'), other: P('<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>'),
+    cam: P('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="4"/>'), img: P('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 18 5-5 4 4 3-3 4 4"/>'),
+    cal: P('<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>'), book: P('<path d="M12 6c-2-2-6-2-9-1v14c3-1 7-1 9 1 2-2 6-2 9-1V5c-3-1-7-1-9 1z"/><path d="M12 6v14"/>'),
+    back: P('<path d="M15 5l-7 7 7 7"/>'), eye: WI.pw, x: P('<path d="M6 6l12 12M18 6 6 18"/>'),
+    fb: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#1877f2"/><path fill="#fff" d="M13.4 20v-7h2.3l.4-2.8h-2.7V8.4c0-.8.3-1.3 1.4-1.3h1.4V4.6c-.3 0-1.1-.1-2.1-.1-2.1 0-3.5 1.3-3.5 3.6v2.1H8.3V13h2.3v7z"/></svg>',
+    tt: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#000"/><path fill="#fff" d="M16.6 8.3a3 3 0 0 1-2.2-2.6h-2.1v8.6a1.8 1.8 0 1 1-1.3-1.7V10.5a4 4 0 1 0 3.4 4V10a5 5 0 0 0 2.9.9V8.8a3 3 0 0 1-.7-.5z"/></svg>',
+    wa: '<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#25d366"/><path fill="#fff" d="M12 5.5a6.5 6.5 0 0 0-5.6 9.8L5.5 18.5l3.3-.9A6.5 6.5 0 1 0 12 5.5zm3.4 8.9c-.2.5-1 .9-1.4.9-.4 0-.8.1-2.6-.6a8.6 8.6 0 0 1-3-2.7c-.6-.8-.9-1.600-.9-2.200 0-.7.4-1 .5-1.200.1-.2.3-.2.5-.2h.4c.1 0 .3 0 .4.300l.6 1.400c.1.100 0 .3 0 .4l-.3.400c-.1.100-.2.300-.1.500a5 5 0 0 0 2.400 2c.2.100.4.100.5-.1l.6-.8c.1-.2.300-.2.500-.1l1.400.7c.2.100.3.200.3.300 0 .2 0 .6-.2 1z"/></svg>'
+  };
+  const fld = (id, ph, ic, o) => { o = o || {}; return '<div class="wzin"><span class="wzi">' + ic + '</span><input id="' + id + '" type="' + (o.t || 'text') + '" placeholder="' + ph + '"' + (o.ac ? ' autocomplete="' + o.ac + '"' : '') + (o.im ? ' inputmode="' + o.im + '"' : '') + (o.ml ? ' maxlength="' + o.ml + '"' : '') + '>' + (o.clr ? '<button type="button" class="wzx" data-w="wz-clr" data-id="' + id + '" aria-label="মুছুন">' + I.x + '</button>' : '') + (o.pw ? '<button type="button" class="wzx" data-w="pw" data-id="' + id + '" aria-label="পাসওয়ার্ড দেখান বা লুকান">' + I.eye + '</button>' : '') + '</div>'; };
+  const nx = '<button type="button" class="wbtn wzn" data-w="wz-next">পরবর্তী</button>';
+  const gt = (v, l, ic) => '<button type="button" class="wzg" data-w="wz-g" data-v="' + v + '"><i>' + P('<path d="m5 12 5 5 9-10"/>') + '</i>' + ic + '<b>' + l + '</b></button>';
+  const steps = [
+    '<h2>আপনার নাম লিখুন</h2><p class="wzs2">অনুগ্রহ করে আপনার সঠিক নাম ব্যবহার করুন</p><div class="wzrow">' + fld('wz-fn', 'প্রথম নাম', I.user, { ac: 'given-name', clr: 1 }) + fld('wz-sn', 'শেষ নাম', I.user, { ac: 'family-name', clr: 1 }) + '</div>' + nx +
+      '<div class="wzlg">আগে থেকেই অ্যাকাউন্ট আছে? <button type="button" class="wlink" data-w="go" data-href="/w">লগইন</button></div>',
+    '<h2>আপনার ইউজারনেম লিখুন</h2>' + fld('ws-un', 'ইউজারনেম', I.at, { ac: 'username', ml: 20 }) + '<p class="wzh">৩–২০ অক্ষর, শুধু a-z, 0-9, _ বা .</p><h3>আপনার লিঙ্গ নির্বাচন করুন</h3><div class="wzgs">' + gt('m', 'পুরুষ', I.male) + gt('f', 'নারী', I.female) + gt('o', 'অন্যান্য', I.other) + '</div>' + nx,
+    '<h2>পাসওয়ার্ড দিন</h2>' + fld('ws-p', 'পাসওয়ার্ড', I.lock, { t: 'password', ac: 'new-password', pw: 1 }) + fld('wz-p2', 'পাসওয়ার্ড আবার লিখুন', I.lock, { t: 'password', ac: 'new-password', pw: 1 }) + '<p class="wzh">কমপক্ষে ৮ অক্ষর ব্যবহার করুন</p>' + nx,
+    '<h2>আপনার সোশ্যাল লিংক দিন</h2><p class="wzs2">ফেসবুক বা টিকটকের যেকোনো একটি লিংক দিন</p>' + fld('wz-fb', 'ফেসবুক প্রোফাইল/পেজ লিংক', I.fb, { t: 'url', ac: 'url' }) + fld('wz-tt', 'টিকটক প্রোফাইল লিংক', I.tt, { t: 'url' }) + '<p class="wzh">একজন একটাই অ্যাকাউন্ট খুলতে পারবেন — তাই আপনার আসল প্রোফাইল বা পেজের লিংক দিন</p>' + nx,
+    '<h2>প্রোফাইল ছবি বেছে নিন</h2><p class="wzs2">প্রোফাইল সাজাতে একটি ছবি দিন</p><button type="button" class="wzph" data-w="pick-av" aria-label="ছবি নির্বাচন করুন"><div id="wavBox"><span class="wzpi">' + I.cam + '<b>ট্যাপ করে ছবি দিন</b></span><span class="cam" hidden></span></div></button><button type="button" class="wzgal" data-w="pick-av">' + I.img + 'গ্যালারি থেকে বেছে নিন</button><input type="file" id="wavF" accept="image/*" hidden>' + nx + '<p class="wzh c">পরে প্রোফাইল সেটিংস থেকে বদলাতে পারবেন</p>',
+    '<h2>হোয়াটসঅ্যাপ নম্বর ও ইমেইল দিন</h2><p class="wzs2">অ্যাকাউন্ট চালু ও যাচাইয়ের জন্য এটি ব্যবহার হবে</p>' + fld('ws-wa', 'হোয়াটসঅ্যাপ নম্বর (যেটা চালু আছে)', I.wa, { t: 'tel', ac: 'tel', im: 'numeric' }) + fld('ws-e', 'ইমেইল (জিমেইল)', I.mail, { t: 'email', ac: 'username', im: 'email' }) +
+      '<div class="werr" id="wErr" role="alert"></div><button type="button" class="wbtn wzn" data-w="signup" id="wBtn">অ্যাকাউন্ট খুলুন</button><p class="wzh c">চালিয়ে গেলে আপনি আমাদের শর্তাবলি ও গোপনীয়তা নীতি মেনে নিচ্ছেন</p>'
+  ];
+  return wPage('লেখক অ্যাকাউন্ট', '<div class="wauth wz" id="wzf" data-step="1"><div class="wzbar"><button type="button" class="wzb" data-w="wz-back" aria-label="পিছনে">' + I.back + '</button><div class="wzpg"><i id="wzFill" style="width:' + (100 / WZ_N) + '%"></i></div><span id="wzNo">ধাপ ১/' + bn(WZ_N) + '</span></div>' +
+    '<div class="wzbrand">' + I.book + '<b>নীল চিরকুট</b></div>' + steps.map((h, k) => '<section class="wzst" data-s="' + (k + 1) + '"' + (k ? ' hidden' : '') + '>' + h + '</section>').join('') +
+    '<div class="werr" id="wErr2" role="alert"></div><input type="hidden" id="ws-n"><input type="hidden" id="ws-m"><input type="hidden" id="ws-gn"><input type="hidden" id="ws-co"><input type="hidden" id="ws-lg" value="bn"><input type="hidden" id="ws-sl"></div>', null, true);
 }
+const wzErr = (m) => { const a = document.getElementById('wErr'), b = document.getElementById('wErr2'); const t = document.getElementById('wzf'); const v = +(t && t.dataset.step) || 1; const e = (v === WZ_N ? a : b) || a; if (a) a.textContent = ''; if (b) b.textContent = ''; if (e) e.textContent = m || ''; return m || ''; };
+function wzCheck(k) {
+  const g = (id) => wv(id);
+  if (k === 1) { if (!g('wz-fn')) return 'প্রথম নাম লিখুন'; if (!g('wz-sn')) return 'শেষ নাম লিখুন'; }
+  if (k === 2) { const un = g('ws-un').toLowerCase().replace(/^@/, ''); if (!/^[a-z0-9_.]{3,20}$/.test(un)) return 'ইউজারনেম ৩–২০ অক্ষর, শুধু a-z, 0-9, _ বা . দিন'; if (!g('ws-gn')) return 'লিঙ্গ নির্বাচন করুন'; }
+  if (k === 3) { const p = (document.getElementById('ws-p') || {}).value || '', q = (document.getElementById('wz-p2') || {}).value || ''; if (p.length < 8) return 'পাসওয়ার্ড কমপক্ষে ৮ অক্ষর দিন'; if (p !== q) return 'দুই ঘরের পাসওয়ার্ড মিলছে না'; }
+  if (k === 4) { const re = /^https?:\/\/(www\.|m\.|web\.|mbasic\.|vt\.|vm\.)?(facebook\.com|fb\.com|fb\.me|fb\.watch|tiktok\.com)\/\S+/i, f = g('wz-fb'), t = g('wz-tt'); if (!f && !t) return 'ফেসবুক বা টিকটকের একটি লিংক দিন'; if ((f && !re.test(f)) || (t && !re.test(t))) return 'সঠিক লিংক দিন (https://facebook.com/... বা https://tiktok.com/@...)'; }
+  return '';
+}
+function wzSync() {
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.value = v; };
+  set('ws-n', (wv('wz-fn') + ' ' + wv('wz-sn')).trim());
+  const wa = wv('ws-wa').replace(/[\s-]/g, ''); set('ws-m', wa);
+  const mp = [['+91', 'IN'], ['+92', 'PK'], ['+977', 'NP'], ['+94', 'LK'], ['+975', 'BT'], ['+960', 'MV'], ['+93', 'AF']]; let co = 'BD'; mp.forEach((x) => { if (wa.indexOf(x[0]) === 0) co = x[1]; }); set('ws-co', co);
+  set('ws-sl', wv('wz-fb') || wv('wz-tt'));
+}
+function wzShow(k) {
+  const t = document.getElementById('wzf'); if (!t) return; t.dataset.step = k;
+  t.querySelectorAll('.wzst').forEach((x) => { x.hidden = +x.dataset.s !== k; });
+  const f = document.getElementById('wzFill'); if (f) f.style.width = (k * 100 / WZ_N) + '%';
+  const n = document.getElementById('wzNo'); if (n) n.textContent = 'ধাপ ' + bn(k) + '/' + bn(WZ_N);
+  wzErr(''); try { window.scrollTo(0, 0); } catch (e) { /* ignore */ }
+  const i = t.querySelector('.wzst[data-s="' + k + '"] input:not([type=hidden])'); if (i && k !== 5) setTimeout(() => { try { i.focus(); } catch (e) { /* ignore */ } }, 120);
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' || !e.target || !e.target.closest || !e.target.closest('#wzf')) return;
+  const sec = e.target.closest('.wzst'); const b = sec && sec.querySelector('[data-w="wz-next"],[data-w="signup"]'); if (b) { e.preventDefault(); b.click(); }
+});
 
 /* ---- ড্যাশবোর্ড ---- */
 Object.assign(WI, {
@@ -3871,6 +3962,10 @@ async function wClick(ev) {
         el.disabled = true; try { await WR.fs.doc('books/' + k[0] + '/comments/' + k[1]).update({ reply: { text: t.slice(0, 200), at: Date.now(), name: (WR.prof && WR.prof.name) || '' } }); WR.cache = null; toast('উত্তর পাঠানো হয়েছে'); route(); } catch (x) { el.disabled = false; toast(wErr(x)); } break;
       }
       case 'retry': WR.ready = null; WR.cache = null; route(); break;
+      case 'wz-next': { const t = document.getElementById('wzf'); const k = +(t && t.dataset.step) || 1; const r = wzCheck(k); if (r) { wzErr(r); break; } wzSync(); wzShow(Math.min(WZ_N, k + 1)); break; }
+      case 'wz-back': { const t = document.getElementById('wzf'); const k = +(t && t.dataset.step) || 1; if (k <= 1) nav('/w', true); else wzShow(k - 1); break; }
+      case 'wz-clr': { const i = document.getElementById(el.dataset.id); if (i) { i.value = ''; i.focus(); } break; }
+      case 'wz-g': { document.getElementById('ws-gn').value = el.dataset.v; document.querySelectorAll('.wzg').forEach((x) => x.classList.toggle('on', x === el)); wzErr(''); break; }
       case 'pw': { const i = document.getElementById(el.dataset.id); if (i) i.type = i.type === 'password' ? 'text' : 'password'; break; }
       case 'pick-av': { const f = document.getElementById('wavF'); if (f) f.click(); break; }
       case 'fin-on': {
@@ -3896,6 +3991,7 @@ async function wClick(ev) {
         try { await WR.auth.sendPasswordResetEmail(e); wSet('পাসওয়ার্ড রিসেট লিংক ইমেইলে পাঠানো হয়েছে', true); } catch (x) { wSet(wErr(x)); } break;
       }
       case 'signup': {
+        if (document.getElementById('wzf')) { wzSync(); for (let k = 1; k <= 4; k++) { const r = wzCheck(k); if (r) { wzShow(k); return wzErr(r); } } }
         const n = wv('ws-n'), e = wv('ws-e'), m = wv('ws-m').replace(/[\s-]/g, ''), p = document.getElementById('ws-p').value;
         if (!n) return wSet('নাম লিখুন'); const un = wv('ws-un').toLowerCase().replace(/^@/, ''); if (!/^[a-z0-9_.]{3,20}$/.test(un)) return wSet('ইউজারনেম ৩–২০ অক্ষর, শুধু a-z, 0-9, _ বা . দিন'); if (!/^\S+@\S+\.\S+$/.test(e)) return wSet('সঠিক ইমেইল দিন'); const gn = wv('ws-gn'); if (!gn) return wSet('লিঙ্গ নির্বাচন করুন'); const co = wv('ws-co'), lg = wv('ws-lg'); if (!co) return wSet('দেশ সিলেক্ট করুন'); if (!lg) return wSet('ভাষা সিলেক্ট করুন'); const wa = wv('ws-wa').replace(/[\s-]/g, ''); if (co === 'BD' ? !/^(\+?88)?01[3-9]\d{8}$/.test(wa) : !/^\+?\d{7,15}$/.test(wa)) return wSet('সঠিক হোয়াটসঅ্যাপ নাম্বার দিন — যেটা চালু আছে (০১XXXXXXXXX)'); const sl = wv('ws-sl'); if (!/^https?:\/\/(www\.|m\.|web\.|mbasic\.|vt\.|vm\.)?(facebook\.com|fb\.com|fb\.me|fb\.watch|tiktok\.com)\/\S+/i.test(sl)) return wSet('সঠিক ফেসবুক বা টিকটক লিংক দিন (https://facebook.com/... বা https://tiktok.com/@...)'); if (co === 'BD' ? !/^(\+?88)?01\d{9}$/.test(m) : !/^\+?\d{7,15}$/.test(m)) return wSet(co === 'BD' ? 'সঠিক মোবাইল নাম্বার দিন (০১XXXXXXXXX)' : 'সঠিক মোবাইল নাম্বার দিন (দেশের কোড সহ)'); if (p.length < 6) return wSet('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের দিন');
         wSet(''); wBusy(1);
@@ -5232,7 +5328,6 @@ function rsHtml() {
   if (rsTab === 'look') {
     h += '<div class="scard"><span class="lbl">পেইজের ব্যাকগ্রাউন্ড</span><div class="swatches">' + Object.keys(RBG).map((k) =>
       '<button class="swatch' + (eff === k ? ' on' : '') + '" data-act="rs-bg" data-v="' + k + '" aria-label="' + k + '" style="background:' + RBG[k][0] + '">' + (eff === k ? IC.check : '') + '</button>').join('') + '</div></div>' +
-      '<div class="scard"><span class="lbl">অধ্যায় বারের রং</span><div class="swatches">' + Object.keys(CHB).map((k) => '<button class="swatch' + (r.chbar === k ? ' on' : '') + '" data-act="rs-chbar" data-v="' + k + '" aria-label="' + CHB[k][0] + '" style="background:' + CHB[k][1] + '">' + (r.chbar === k ? IC.check : '') + '</button>').join('') + '</div></div>' +
       '<div class="scard srow"><span>লেখার সাইজ</span><div class="step"><button data-act="rs-fs" data-d="-1">A−</button><b>' + bn(r.fs) + '</b><button data-act="rs-fs" data-d="1">A+</button></div></div>' +
       '<div class="scard srow"><span>প্যারাগ্রাফের ফাঁক</span><div class="step"><button data-act="rs-gap" data-d="-2">A−</button><b>' + bn(r.gap) + '</b><button data-act="rs-gap" data-d="2">A+</button></div></div>' +
       '<div class="scard"><span class="lbl">ফন্ট পরিবর্তন করুন</span><div class="fonts">' + Object.keys(FONTS).map((k) => '<button class="' + (r.font === k ? 'on' : '') + '" data-act="rs-font" data-v="' + k + '" style="font-family:' + FONTS[k][0] + '">' + FONTS[k][1] + '</button>').join('') + '</div></div>' +
@@ -5949,7 +6044,7 @@ function viewProfile() {
   const chbOpts = '<div class="swatches" style="padding:6px 2px">' + Object.keys(CHB).map((k) => '<button class="swatch' + (cbk === k ? ' on' : '') + '" data-act="prof-chbar" data-v="' + k + '" aria-label="' + CHB[k][0] + '" style="background:' + CHB[k][1] + '">' + (cbk === k ? IC.check : '') + '</button>').join('') + '</div><div class="chbprev"><span style="background:' + CHB[cbk][1] + '">১</span> অধ্যায় ১ — নমুনা</div>';
   const bkv = store.get('jp_bkview', 'overlay');
   const WKD = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহ', 'শুক্র', 'শনি'];
-  const rdc = '<div class="rdc"><small>আজকের পড়া</small><b>' + fmtTime(days[6].s) + '</b><div class="bars">' + days.map((x) => '<span><i style="height:' + Math.max(6, Math.round(x.s / mx * 64)) + 'px"></i><em>' + WKD[x.d.getDay()] + '</em></span>').join('') + '</div><div class="tot">এই সপ্তাহে মোট <b>' + fmtTime(weekTotal) + '</b></div></div>';
+  const rdc = '<div class="rdc" data-act="go" data-href="/goals" role="button" tabindex="0" style="cursor:pointer"><small>আজকের পড়া</small><b>' + fmtTime(days[6].s) + '</b><div class="bars">' + days.map((x) => '<span><i style="height:' + Math.max(6, Math.round(x.s / mx * 64)) + 'px"></i><em>' + WKD[x.d.getDay()] + '</em></span>').join('') + '</div><div class="tot">এই সপ্তাহে মোট <b>' + fmtTime(weekTotal) + '</b></div></div>';
   const phn = (cls, on, act, v, l) => '<button class="phn ' + cls + (on ? ' on' : '') + '" data-act="' + act + '" data-v="' + v + '" aria-pressed="' + on + '"><span class="ph"><i></i><i></i><i></i></span><b>' + l + '</b></button>';
   const phs = '<div class="phr">' + phn('l', modeSel === 'light' && curPal.id !== 'grey', 'theme-set', 'light', 'Light') + phn('d', modeSel === 'dark' && curPal.id !== 'grey', 'theme-set', 'dark', 'Dark') + phn('g', curPal.id === 'grey', 'pal-set', 'grey', 'Grey') + '</div>';
   return headerPage('সেটিংস', true, '<button class="icon-btn" data-act="go" data-href="/notices" aria-label="নোটিফিকেশন">' + IC.bell + '</button>') + '<main class="page sxp">' + rdc +
@@ -5957,6 +6052,7 @@ function viewProfile() {
     '</section>' +
     '<section class="sx"><h4 class="sxh"><i></i>ডিসপ্লে ও থিম</h4>' +
     accRow('lang', 'info', 'ভাষা', lg === 'en' ? 'English' : 'বাংলা', langOpts) +
+    mrow('play', 'ক্লিকের সাউন্ড', 'ট্যাপ বা ক্লিক করলে শব্দ হবে', '<span class="sw' + (store.get('jp_snd', true) !== false ? ' on' : '') + '"></span>', 'data-act="snd-toggle"') +
     mrow('play', 'অটো স্ক্রল বন্ধ করুন', 'ফিচার্ড স্লাইডার নিজে থেকে ঘুরবে না', '<span class="sw' + (store.get('jp_noanim', false) === true ? ' on' : '') + '"></span>', 'data-act="anim-toggle"') + '</section>' +
     '<section class="sx"><h4 class="sxh"><i></i>নোটিফিকেশন</h4>' +
     mrow('bell', 'রোজ পড়ার রিমাইন্ডার', getRem().on ? 'রোজ ' + remFmt(getRem().t) : 'বন্ধ আছে', '', 'data-act="rem-open"') +
@@ -6079,15 +6175,11 @@ function iconMsg(text, icon, ms) {
 }
 function hideIconMsg() { clearTimeout(xmsgT); const m = $('#xmsg'); if (m) m.classList.remove('show'); }
 let exitAt = 0;
-function askExit() { // হোমে ব্যাক = "অ্যাপ থেকে প্রস্থান" ডায়ালগ (থাকুন / বের হোন)
-  showDialog({ title: 'অ্যাপ থেকে প্রস্থান', text: 'আপনি কি নিশ্চিত যে আপনি নীল চিরকুট অ্যাপ থেকে বের হতে চান?', no: 'থাকুন', yes: 'বের হোন', onYes: doExit, emoji: 'x' });
-  $('#dlgI').innerHTML = '<span class="exi"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-3"/><path d="M10 17l-5-5 5-5M5 12h12"/></svg></span>';
-  $('#dlg .dlg').classList.add('exitd'); exitOpen = true;
-}
+function askExit() { doExit(); } // প্রস্থান ডায়ালগ নেই: হোমে ব্যাক দিলে সরাসরি বের হয়
 function doExit() {
   try { const ca = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App; if (ca && ca.exitApp) { ca.exitApp(); return; } } catch (e) { /* ignore */ }
   leaving = true;
-  try { history.go(-2); } catch (e) { /* ignore */ }
+  try { history.go(-Math.max(2, history.length)); } catch (e) { /* ignore */ }
   setTimeout(() => { try { window.close(); } catch (e) { /* ignore */ } leaving = false; if (!document.hidden) toast('অ্যাপ বন্ধ করতে ফোনের হোম বাটন চাপুন'); }, 600);
 }
 let guardPad = false;
@@ -6293,6 +6385,7 @@ async function onClick(ev) {
         keepScrollOnce = true; route(); break; }
       case 'qz-pick': { if (!QZ || QZ.pk >= 0) break; QZ.pk = +d.v; if (QZ.pk === QZ.q.qs[QZ.i].a) QZ.s++; const qb = document.getElementById('qzBody'); if (qb) qb.innerHTML = qzHtml(); break; }
       case 'qz-next': { if (!QZ) break; QZ.i++; QZ.pk = -1; if (QZ.i >= QZ.q.qs.length) store.set('jp_qz_' + QZ.q.id, { s: QZ.s, t: QZ.q.qs.length }); const qb = document.getElementById('qzBody'); if (qb) { qb.innerHTML = qzHtml(); window.scrollTo(0, 0); } break; }
+      case 'snd-toggle': store.set('jp_snd', store.get('jp_snd', true) === false); keepScrollOnce = true; route(); break;
       case 'anim-toggle': { const on = store.get('jp_noanim', false) !== true; store.set('jp_noanim', on); applyAnim(); if (on) clearAuto(); keepScrollOnce = true; route(); break; }
       case 'mini-toggle': store.set('jp_minion', store.get('jp_minion', true) === false); keepScrollOnce = true; route(); break;
       case 'clear-cache': confirmDel('ক্যাশ মুছবেন?', 'সংরক্ষিত ক্যাশ ডেটা মুছে যাবে।', () => { store.del('jp_cache'); store.del('jp_acache'); store.del('jp_minihide'); toast('ক্যাশ মুছে ফেলা হয়েছে'); }); break;
